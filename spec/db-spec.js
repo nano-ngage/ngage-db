@@ -23,8 +23,8 @@ describe('ngage DB', function() {
           if (err) {
             throw err;
           } else {
-            expect(results.length).to.equal(1);
-            expect(results[0].email).to.equal('anon@gmail.com');
+            expect(results.length).to.equal(2);
+            expect(results[1].email).to.equal('anon@gmail.com');
             done();
           }
         })
@@ -33,13 +33,13 @@ describe('ngage DB', function() {
 
   it('Should create a new presentation', function(done) {
     // POST presentation with existing userID
-    db.presentation.post(1).then(res => {
+    db.presentation.post(0).then(res => {
       q('SELECT * FROM presentation', [], function(err, results) {
         if (err) {
           throw err;
         } else {
-          expect(results.length).to.equal(1);
-          expect(results[0].userID).to.equal(1);
+          expect(results.length).to.equal(2);
+          expect(results[1].userID).to.equal(0);
           done();
         }
       })
@@ -53,9 +53,9 @@ describe('ngage DB', function() {
         if (err) {
           throw err;
         } else {
-          expect(results.length).to.equal(1);
-          expect(results[0].type).to.equal(0);
-          expect(results[0].question).to.equal(queryString);
+          expect(results.length).to.equal(2);
+          expect(results[1].type).to.equal(0);
+          expect(results[1].question).to.equal(queryString);
           done();
         }
       })
