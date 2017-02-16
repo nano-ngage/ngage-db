@@ -1,4 +1,4 @@
-var pg = require('pg');
+var Pool = require('pg-pool');
 
 var config = {
   user: 'ephqygbj', //env var: PGUSER
@@ -10,6 +10,7 @@ var config = {
   idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
 };
 
-var pool = new pg.Pool(config);
+
+var pool = new Pool(config);
 
 module.exports = pool;

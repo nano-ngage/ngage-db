@@ -5,7 +5,7 @@
   "repository": "https://github.com/nano-ngage/ngage.git",
   "scripts": {
     "start": "nodemon server/index.js",
-    "test": "mocha server/spec/server-spec.js; RES=$?; kill %1; exit $RES"
+    "test": "mocha spec/db-spec.js"
   },
   "contributors": [
     "Sunnie Mao",

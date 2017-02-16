@@ -9,7 +9,6 @@ DROP TABLE IF EXISTS "response" CASCADE;
 DROP TABLE IF EXISTS "session" CASCADE;
 DROP TABLE IF EXISTS "answer" CASCADE;
 DROP TABLE IF EXISTS "question" CASCADE;
-DROP TABLE IF EXISTS "questions" CASCADE;
 DROP TABLE IF EXISTS "presentation" CASCADE;
 DROP TABLE IF EXISTS "user" CASCADE;
 -- ---
@@ -48,22 +47,6 @@ CREATE TABLE "presentation" (
 );
 
 -- ---
--- Table 'questions'
--- 
--- ---
-
-DROP TABLE IF EXISTS "questions";
-    
-CREATE TABLE "questions" (
-  "questionsID" SERIAL NOT NULL,
-  "presentationID" INTEGER NOT NULL DEFAULT -1,
-  "questionID" INTEGER NOT NULL DEFAULT -1,
-  "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY ("questionsID")
-);
-
--- ---
 -- Table 'questionID'
 -- 
 -- ---
@@ -72,6 +55,7 @@ DROP TABLE IF EXISTS "question";
     
 CREATE TABLE "question" (
   "questionID" SERIAL NOT NULL,
+  "presentationID" INTEGER NOT NULL DEFAULT -1,
   "type" INTEGER NOT NULL DEFAULT 0,
   "question" VARCHAR(140) NULL DEFAULT NULL,
   "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -137,8 +121,7 @@ CREATE TABLE "response" (
 -- ---
 
 ALTER TABLE "presentation" ADD FOREIGN KEY ("userID") REFERENCES "user" ("userID");
-ALTER TABLE "questions" ADD FOREIGN KEY ("presentationID") REFERENCES "presentation" ("presentationID");
-ALTER TABLE "questions" ADD FOREIGN KEY ("questionID") REFERENCES "question" ("questionID");
+ALTER TABLE "question" ADD FOREIGN KEY ("presentationID") REFERENCES "presentation" ("presentationID");
 ALTER TABLE "answer" ADD FOREIGN KEY ("questionID") REFERENCES "question" ("questionID");
 ALTER TABLE "session" ADD FOREIGN KEY ("presentationID") REFERENCES "presentation" ("presentationID");
 ALTER TABLE "response" ADD FOREIGN KEY ("sessionID") REFERENCES "session" ("sessionID");
@@ -168,10 +151,8 @@ INSERT INTO "user" ("userID","type","firstName","lastName","email","password","a
 (-1,0,'undefined','undefined','undefined','undefined',0);
 INSERT INTO "presentation" ("presentationID","userID") VALUES
 (-1,-1);
-INSERT INTO "question" ("questionID","type","question") VALUES
-(-1,0,'undefined');
-INSERT INTO "questions" ("questionsID","presentationID","questionID") VALUES
-(-1,-1,-1);
+INSERT INTO "question" ("questionID","presentationID","type","question") VALUES
+(-1,-1,0,'undefined');
 INSERT INTO "answer" ("answerID","questionID","answer","correct") VALUES
 (-1,-1,'undefined',0);
 INSERT INTO "session" ("sessionID","presentationID","socket") VALUES
