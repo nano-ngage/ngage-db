@@ -7,5 +7,5 @@ COPY package.json /usr/src/app/
 RUN yarn
 # Bundle app source
 COPY . /usr/src/app
-EXPOSE 8080
+EXPOSE 5000
 CMD [ "yarn", "start" ]

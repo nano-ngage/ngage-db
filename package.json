@@ -2,7 +2,7 @@
   "name": "ngage-db",
   "version": "1.0.0",
   "description": "Participation app of the future!",
-  "repository": "https://github.com/nano-ngage/ngage.git",
+  "repository": "https://github.com/nano-ngage/ngage-db.git",
   "scripts": {
     "start": "nodemon server/index.js",
     "test": "mocha spec/db-spec.js"

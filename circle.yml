@@ -1,0 +1,21 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - docker info
+    - docker build -t nanongage/ngage-db .
+
+test:
+  override:
+    - docker run -d -p 4567:5000 nanongage/ngage-db; sleep 10
+    - curl --retry 10 --retry-delay 5 -v http://localhost:4567/
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - docker login -e nanongage@gmail.com -u nanongage -p $DOCKER_PW
+      - docker push nanongage/ngage-db
+      - ./deploy.sh
