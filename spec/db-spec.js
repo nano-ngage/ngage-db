@@ -39,7 +39,7 @@ describe('ngage DB', function() {
           throw err;
         } else {
           expect(results.length).to.equal(1);
-          expect(results.userID).to.equal(1);
+          expect(results[0].userID).to.equal(1);
           done();
         }
       })
@@ -54,8 +54,8 @@ describe('ngage DB', function() {
           throw err;
         } else {
           expect(results.length).to.equal(1);
-          expect(results.type).to.equal(0);
-          expect(results.question).to.equal(queryString);
+          expect(results[0].type).to.equal(0);
+          expect(results[0].question).to.equal(queryString);
           done();
         }
       })
