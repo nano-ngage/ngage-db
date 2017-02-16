@@ -83,13 +83,12 @@ describe('ngage DB', function() {
       }).catch(e => {throw e;})
     }).catch(e => {throw e;})
 
-    //test GET
-    // db.response.get(0)
-    // .then((res) => {
-    //   expect(res.rows).to.exist;
-    //   expect(res.rows.userID).to.equal(-1);
+    // test GET
+    db.response.get(0).then(res => {
+      expect(res.rows).to.exist;
+      expect(res.rows.userID).to.equal(-1);
 
-    // })
+    }).catch(e => {throw e;})
   })
 
 });
