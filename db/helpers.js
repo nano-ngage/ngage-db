@@ -22,7 +22,7 @@ module.exports = {
   answer: {
     truncate: () => db.query('DELETE FROM "answer" where "answerID" >= 0'),
     get: (id) => db.query('SELECT * FROM "answer" WHERE "answerID" = $1', [id]),
-    getAnswerByQuestion: (id) => db.query('SELECT * FROM "answer" WHERE "answerID" = $1', id),
+    getAnswerByQuestion: (id) => db.query('SELECT * FROM "answer" WHERE "answerID" = $1', [id]),
     post: (questionID, answer, correct) => db.query('INSERT INTO answer ("questionID", "answer", "correct") VALUES ($1, $2, $3)', [questionID, answer, correct]),
     postMultiple: (values) => db.query('INSERT INTO answer ("questionID", "answer", "correct") VALUES $1', [values])
   },
