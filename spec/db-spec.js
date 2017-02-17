@@ -5,7 +5,22 @@ var Promise = require('bluebird');
 
 describe('ngage DB', function() {
   var cli = new pg.Client('postgres://ephqygbj:sTgEHTHK82B7Rc9WVZ92y8PEcAKkm8zh@babar.elephantsql.com:5432/ephqygbj');
-  cli.connect();
+
+  before(function(done) {
+    cli.connect(err => {
+     cli.query('DELETE FROM "response" where "responseID" >= 0')
+    .then(cli.query('DELETE FROM "session" where "sessionID" >= 0'))
+    .then(cli.query('DELETE FROM "answer" where "answerID" >= 0'))
+    .then(cli.query('DELETE FROM "question" where "questionID" >= 0'))
+    .then(cli.query('DELETE FROM "presentation" where "presentationID" >= 0'))
+    .then(cli.query('DELETE FROM "user" where "userID" >= 0'))
+    .then(() => {done ()})     
+    })
+  });
+
+  after(function() {
+    cli.end();
+  });
 
   it('Should create a new user', function(done) {
     db.user.post(0, 'anon', 'anon', 'anon@gmail.com', 0).then(post => {
