@@ -18,7 +18,7 @@ module.exports = {
     if (qid && answers) {
       var answerString = '';
       for (var i = 0; i < answers.length; i++) {
-        answerString += ('(' + qid ',"' + answers[i].answer + '",' + (answers[i].correct ? 1 : 0) + "),");
+        answerString += ('(' + qid + ',"' + answers[i].answer + '",' + (answers[i].correct ? 1 : 0) + "),");
       }
       answerString = answerString.substring(0, answerString - 2);
       db.answer.postMultiple(answerString).then(result => {
