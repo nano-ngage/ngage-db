@@ -42,6 +42,7 @@ describe('ngage DB', function() {
   })
 
    it('Should create a new answer', function(done) {
+    // POST test
     db.answer.post(-1, 'A', 1).then(res => {
       db.answer.post(-1, 'B', 0).then(res => {
         cli.query('SELECT * FROM "answer"').then(res => {
@@ -54,10 +55,20 @@ describe('ngage DB', function() {
         }).catch(e => {throw e;})
       }).catch(e => {throw e;})
     }).catch(e => {throw e;})
+
+    // GET test
+    db.answer.get(1).then(res => {
+      expect(res.rows.length).to.be.equal(1);
+      expect(res.rows[0].answer).to.be.equal('B');
+      expect(res.rows[0].correct).to.be.equal(0);
+      done();
+    }).catch(e => {throw e;})
+
   })
 
   it('Should create a new session', function(done) {
     var socketString = 'test1';
+    // POST test
     db.session.post(-1, socketString).then(res => {
       cli.query('SELECT * FROM "session"').then(res => {
         expect(res.rows).to.have.length.above(1);
@@ -65,6 +76,13 @@ describe('ngage DB', function() {
         expect(res.rows[res.rows.length - 1].socket).to.equal(socketString);
         done();
       }).catch(e => {throw e;})
+    }).catch(e => {throw e;})
+
+    // GET test
+    db.session.get(0).then(res => {
+      expect(res.rows.length).to.be.equal(1);
+      expect(res.rows[0]).socket.to.be.equal(socketString);
+      done();
     }).catch(e => {throw e;})
   })
 
@@ -86,8 +104,9 @@ describe('ngage DB', function() {
     // test GET
     db.response.get(0).then(res => {
       expect(res.rows).to.exist;
-      expect(res.rows.userID).to.equal(-1);
-
+      expect(res.rows[0].userID).to.equal(-1);
+      expect(res.rows[0].content).to.equal(content);
+      done();
     }).catch(e => {throw e;})
   })
 
