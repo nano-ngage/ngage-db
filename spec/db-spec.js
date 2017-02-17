@@ -15,6 +15,12 @@ describe('ngage DB', function() {
         done();
       }).catch(e => {throw e;})
     }).catch(e => {throw e;})
+
+    db.user.get(0).then(res => {
+      expect(res.rows.length).to.equal(1);
+      expect(res.rows.email).to.equal('anon@gmail.com');
+      done();
+    }).catch(e => {throw e;})
   });
 
   it('Should create a new presentation', function(done) {
@@ -25,6 +31,12 @@ describe('ngage DB', function() {
         expect(res.rows[res.rows.length - 1].userID).to.equal(-1);
         done();
       }).catch(e => {throw e;})
+    }).catch(e => {throw e;})
+
+    db.presentation.get(0).then(res => {
+      expect(res.rows.length).to.equal(1);
+      expect(res.rows.userID).to.equal(-1);
+      done();
     }).catch(e => {throw e;})
   })
 
@@ -38,6 +50,13 @@ describe('ngage DB', function() {
         expect(res.rows[res.rows.length - 1].question).to.equal(queryString);
         done();
       }).catch(e => {throw e;})
+    }).catch(e => {throw e;})
+
+    db.question.get(0).then(res => {
+      expect(res.rows.length).to.equal(1);
+      expect(res.rows.type).to.equal(0);
+      expect(res.rows.question).to.equal(queryString);
+      done();
     }).catch(e => {throw e;})
   })
 
@@ -58,9 +77,9 @@ describe('ngage DB', function() {
 
     // GET test
     db.answer.get(1).then(res => {
-      expect(res.rows.length).to.be.equal(1);
-      expect(res.rows[0].answer).to.be.equal('B');
-      expect(res.rows[0].correct).to.be.equal(0);
+      expect(res.rows.length).to.equal(1);
+      expect(res.rows[0].answer).to.equal('B');
+      expect(res.rows[0].correct).to.equal(0);
       done();
     }).catch(e => {throw e;})
 
@@ -80,8 +99,8 @@ describe('ngage DB', function() {
 
     // GET test
     db.session.get(0).then(res => {
-      expect(res.rows.length).to.be.equal(1);
-      expect(res.rows[0]).socket.to.be.equal(socketString);
+      expect(res.rows.length).to.equal(1);
+      expect(res.rows[0]).socket.to.equal(socketString);
       done();
     }).catch(e => {throw e;})
   })
