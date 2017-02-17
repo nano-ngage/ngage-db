@@ -18,4 +18,4 @@ deployment:
     commands:
       - docker login -e nanongage@gmail.com -u nanongage -p $DOCKER_PW
       - docker push nanongage/ngage-db
-      - ./deploy.sh
+      - sh ./deploy.sh
