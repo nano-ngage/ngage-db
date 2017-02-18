@@ -30,6 +30,28 @@ module.exports = {
     } else {
       res.status(400).send('question ID/answers not provided');
     }
+  },
+  login: (req, res, next) => {
+    var login = req.body;
+    console.log(req.body);
+    if (login) {
+      db.user.getByAuth(login.user_id).then(result => {
+        if (result.rows.length > 0) {
+          res.send(result.rows[0]);
+        } else {
+          db.user.post(1, login.given_name, login.family_name, login.email ? login.email : '', '', login.user_id).then(post => {
+            db.user.getByAuth(login.user_id).then(result2 => {
+              res.send(result2.rows[0]);
+            })
+          })
+        }
+      }).catch(err => {
+        console.log(err);
+        res.status(400).send('login doesn"t exist');
+      })
+    } else {
+      res.status(400).send('login information not provided');
+    }
   }
 
 

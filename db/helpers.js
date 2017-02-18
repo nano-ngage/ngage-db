@@ -7,6 +7,7 @@ module.exports = {
   user: {
     truncate: () => db.query('DELETE FROM "user" where "userID" >= 0'),
     get: (id) => db.query('SELECT * FROM "user" where "userID" = $1', [id]),
+    getByAuth: (id) => db.query('SELECT * FROM "user" where "authID" = $1', [id]),
     post: (type, firstName, lastName, email, password, authID) => db.query('INSERT INTO "user" ("type","firstName","lastName","email","password","authID") VALUES ($1, $2, $3, $4, $5, $6)', [type, firstName, lastName, email, password, authID])
   },
   presentation: {

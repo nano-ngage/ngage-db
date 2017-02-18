@@ -25,7 +25,7 @@ CREATE TABLE "user" (
   "lastName" VARCHAR(50) NOT NULL,
   "email" VARCHAR(100) NOT NULL,
   "password" VARCHAR(50) NOT NULL,
-  "authID" INTEGER NULL DEFAULT -1,
+  "authID" VARCHAR(150) NULL DEFAULT NULL,
   "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY ("userID")
@@ -148,7 +148,7 @@ ALTER TABLE "response" ADD FOREIGN KEY ("answerID") REFERENCES "answer" ("answer
 
 
 INSERT INTO "user" ("userID","type","firstName","lastName","email","password","authID") VALUES
-(-1,0,'undefined','undefined','undefined','undefined',0);
+(-1,0,'undefined','undefined','undefined','undefined','undefined');
 INSERT INTO "presentation" ("presentationID","userID") VALUES
 (-1,-1);
 INSERT INTO "question" ("questionID","presentationID","type","question") VALUES
