@@ -15,5 +15,6 @@ app.get('/aByQ/:id', helpers.getAnswers);
 
 
 app.post('/aByQ', helpers.postAnswers);
+app.post('/login', helpers.login);
 
 module.exports = app;
