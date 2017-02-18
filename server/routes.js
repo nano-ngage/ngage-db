@@ -11,10 +11,26 @@ app.options('*', cors());
 
 
 app.get('/', (req, res) => {res.send('Hello world')});
-app.get('/aByQ/:id', helpers.getAnswers);
 
-
-app.post('/aByQ', helpers.postAnswers);
+//LOGIN
 app.post('/login', helpers.login);
+
+// ANSWERS
+app.get('/aByQ/:id', helpers.getAnswers);
+app.get('/aByCorrect', helpers.getCorrectAnswer);
+app.post('/aByQ', helpers.postAnswers);
+
+// QUESTIONS
+app.get('/qBySocket', helpers.getQuestions);
+app.post('/qByP', helpers.postQuestion);
+
+// PRESENTATION
+app.get('/pBySocket', helpers.getPresentation);
+app.post('/pByU', helpers.postPresentation);
+
+// SESSION
+// app.get('/getS/:id', helpers.getSession);
+app.post('/sByPS', helpers.postSession);
+
 
 module.exports = app;
