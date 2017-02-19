@@ -26,7 +26,8 @@ app.post('/qByP', helpers.postQuestion);
 
 // PRESENTATION
 app.get('/pBySocket', helpers.getPresentation);
-app.post('/pByU', helpers.postPresentation);
+app.get('/pByU')
+app.post('/postpByU', helpers.postPresentation);
 
 // SESSION
 // app.get('/getS/:id', helpers.getSession);

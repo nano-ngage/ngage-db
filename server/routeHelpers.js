@@ -102,12 +102,11 @@ module.exports = {
     }
   },
 
-  getPresentation: (req, res, next) => {
+  getPresentationByS: (req, res, next) => {
     var socket = req.params.socket;
     if (socket) {
       db.presentation.getPresBySocket(socket).then(result => {
         if (result.rows.length > 0) {
-          if (result.rows)
           res.send(result.rows[0]);
         } else {
           res.status(400).send('no presentation found with given socket', socket);
@@ -117,6 +116,23 @@ module.exports = {
       })
     } else {
       res.status(400).send('socket not provided');
+    }
+  },
+
+  getPresentationByU: (req, res, next) => {
+    var userID = req.params.userID;
+    if (userID) {
+      db.presentation.getPresByUser(user).then(result => {
+        if (result.rows.length > 0) {
+          res.send(result.rows);
+        } else {
+          res.status(400).send('no presentation found for given user');
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    } else {
+      res.status(400).send('userID not provided');
     }
   },
 
