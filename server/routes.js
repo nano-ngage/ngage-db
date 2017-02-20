@@ -13,14 +13,14 @@ app.options('*', cors());
 app.get('/', (req, res) => {res.send('Hello world')});
 
 //LOGIN
-app.post('/login', helpers.login);
+app.post('/login', helpers.login); // good
 
 // ANSWERS
 app.get('/allA', helpers.getAllAnswers); // good
 app.get('/aByQ/:id', helpers.getAnswers); // good
 app.get('/aByCorrect/:qid', helpers.getCorrectAnswer);// good
 app.post('/aByQ', helpers.postAnswer); // good
-app.post('/aByQs', helpers.postAnswers);
+app.post('/aByQs', helpers.postAnswers); // good
 
 // QUESTIONS
 app.get('/qBySocket/:socket', helpers.getQuestions); // good
