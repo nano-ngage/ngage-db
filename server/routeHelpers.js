@@ -196,7 +196,7 @@ module.exports = {
         if (result.rows.length > 0) {
           res.send(result.rows);
         } else {
-          res.status(400).send('no session found for given id');
+          res.send('-1');
         }
       }).catch(err => {
         res.status(500).send(err);
