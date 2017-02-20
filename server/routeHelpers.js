@@ -53,9 +53,9 @@ module.exports = {
     if (qid && answers) {
       var answerString = '';
       for (var i = 0; i < answers.length; i++) {
-        answerString += '(' + qid + ',"' + answers[i].answer + '",' + (answers[i].correct ? 1 : 0) + "),";
+        answerString += '(' + qid + ', \'' + answers[i].answer + '\', ' + (answers[i].correct ? 1 : 0) + "), ";
       }
-      answerString = answerString.slice(0, answerString.length - 1);
+      answerString = answerString.slice(0, answerString.length - 2);
       console.log(answerString);
       db.answer.postMultiple(answerString).then(result => {
         res.end();
@@ -72,12 +72,12 @@ module.exports = {
     var login = req.body;
     // console.log(req.body);
     if (login) {
-      db.user.getByAuth(login.user_id).then(result => {
+      db.user.getByAuth(login.auth_id).then(result => {
         if (result.rows.length > 0) {
           res.send(result.rows[0]);
         } else {
-          db.user.post(1, login.given_name, login.family_name, login.email ? login.email : '', '', login.user_id).then(post => {
-            db.user.getByAuth(login.user_id).then(result2 => {
+          db.user.post(1, login.given_name, login.family_name, login.email ? login.email : '', '', login.auth_id).then(post => {
+            db.user.getByAuth(login.auth_id).then(result2 => {
               res.send(result2.rows[0]);
             })
           })
