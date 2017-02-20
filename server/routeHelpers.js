@@ -13,10 +13,18 @@ module.exports = {
     }
   },
 
+  getAllAnswers: (req, res, next) => {
+    db.answer.get().then(result => {
+      res.send(result.rows);
+    }).catch(err => {
+      res.status(500).send(err);
+    })
+  },
+
   getCorrectAnswer: (req, res, next) => {
-    var qid = req.params.questionID;
+    var qid = req.params.qid;
     if (qid) {
-      db.answer.getCorrectAnswer(qid).then(result => {
+      db.answer.getCorrect(qid).then(result => {
         res.send(result.rows);
       }).catch(err => {
         res.status(500).send(err);
@@ -26,19 +34,33 @@ module.exports = {
     }
   },
 
+  postAnswer: (req, res, next) => {
+    var qid = req.body.questionID;
+    var answer = req.body.answer;
+    var correct = req.body.correct;
+    if (qid && answer && correct) {
+      db.answer.post(qid, answer, correct).then(result => {
+        res.end();
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    }
+  },
+
   postAnswers: (req, res, next) => {
-    var qid = req.body.qid;
+    var qid = req.body.questionID;
     var answers = req.body.answers;
     if (qid && answers) {
       var answerString = '';
       for (var i = 0; i < answers.length; i++) {
-        answerString += ('(' + qid + ',"' + answers[i].answer + '",' + (answers[i].correct ? 1 : 0) + "),");
+        answerString += '(' + qid + ',"' + answers[i].answer + '",' + (answers[i].correct ? 1 : 0) + "),";
       }
-      answerString = answerString.substring(0, answerString - 2);
+      answerString = answerString.slice(0, answerString.length - 1);
+      console.log(answerString);
       db.answer.postMultiple(answerString).then(result => {
         res.end();
       }).catch(err => {
-        res.status(500).send(err);
+        res.status(500).send(err + answerString);
       })
 
     } else {
@@ -86,19 +108,36 @@ module.exports = {
     }
   },
 
+  getQuestionsByP: (req, res, next) => {
+    var pid = req.params.pid;
+    if (pid) {
+      db.question.getQuestionsByPresentation(pid).then(result => {
+        if (result.rows.length > 0) {
+          res.send(result.rows);
+        } else {
+          res.status(400).send('no questions found with given presentationID');
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    } else {
+      res.status(400).send('presentation Id not provided');
+    }
+  },
+
   postQuestion: (req, res, next) => {
     var pid = req.body.presentationID;
     var type = req.body.type;
     var question = req.body.question;
+    console.log(pid);
     if (pid && type && question) {
       db.question.post(pid, type, question).then(result => {
-        console.log('question posted');
         res.end();
       }).catch(err => {
         res.status(500).send(err);
       })
     } else {
-      res.status(400).send('presentationID or type or question was not provided');
+      res.status(400).send('presentationID or type or question was not provided' + pid);
     }
   },
 
@@ -120,9 +159,9 @@ module.exports = {
   },
 
   getPresentationByU: (req, res, next) => {
-    var userID = req.params.userID;
+    var userID = req.params.id;
     if (userID) {
-      db.presentation.getPresByUser(user).then(result => {
+      db.presentation.getPresByUser(userID).then(result => {
         if (result.rows.length > 0) {
           res.send(result.rows);
         } else {
@@ -140,11 +179,8 @@ module.exports = {
     var user_id = req.body.user_id;
     if (user_id) {
       db.presentation.post(user_id).then(result => {
-        db.presentation.getLastID(user_id).then(result2 => {
-          res.send(result2.rows[0].presentationID);
-        }).catch(err) => {
-          res.status(500).send(err);
-        }
+        console.log(result);
+        res.end();
       }).catch(err => {
         res.status(500).send(err);
       })
@@ -153,18 +189,30 @@ module.exports = {
     }
   },
 
+  getSession: (req, res, next) => {
+    var socket = req.params.socket;
+    if (socket) {
+      db.session.getSessionBySocket(socket).then(result => {
+        if (result.rows.length > 0) {
+          res.send(result.rows);
+        } else {
+          res.status(400).send('no session found for given id');
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    } else {
+      res.status(400).send('sessionID not found');
+    }
+  },
+
   postSession: (req, res, next) => {
     var pid = req.body.presentationID;
     var socket = req.body.socket;
     if (pid && socket) {
       db.session.post(pid, socket).then(result => {
-        db.session.getSessionBySocket(socket).then(result2 => {
-          if (result2.rows.length > 0) {
-            res.send(result2.rows[0].sessionID);
-          }
-        }).catch(err => {
-          res.status(500).send(err);
-        })
+        console.log(result);
+        res.end();
       }).catch(err => {
         res.status(500).send(err);
       })

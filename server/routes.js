@@ -16,22 +16,25 @@ app.get('/', (req, res) => {res.send('Hello world')});
 app.post('/login', helpers.login);
 
 // ANSWERS
-app.get('/aByQ/:id', helpers.getAnswers);
-app.get('/aByCorrect', helpers.getCorrectAnswer);
-app.post('/aByQ', helpers.postAnswers);
+app.get('/allA', helpers.getAllAnswers); // good
+app.get('/aByQ/:id', helpers.getAnswers); // good
+app.get('/aByCorrect/:qid', helpers.getCorrectAnswer);// good
+app.post('/aByQ', helpers.postAnswer); // good
+app.post('/aByQs', helpers.postAnswers);
 
 // QUESTIONS
-app.get('/qBySocket', helpers.getQuestions);
-app.post('/qByP', helpers.postQuestion);
+app.get('/qBySocket/:socket', helpers.getQuestions); // good
+app.get('/qByP/:pid', helpers.getQuestionsByP) // good
+app.post('/qByP', helpers.postQuestion); // good
 
 // PRESENTATION
-app.get('/pBySocket', helpers.getPresentation);
-app.get('/pByU')
-app.post('/postpByU', helpers.postPresentation);
+app.get('/pBySocket/:socket', helpers.getPresentationByS); //good
+app.get('/pByU/:id', helpers.getPresentationByU) // good
+app.post('/postpByU', helpers.postPresentation); // good
 
 // SESSION
-// app.get('/getS/:id', helpers.getSession);
-app.post('/sByPS', helpers.postSession);
+app.get('/sByS/:socket', helpers.getSession); // good
+app.post('/sByPS', helpers.postSession); // good
 
 
 module.exports = app;

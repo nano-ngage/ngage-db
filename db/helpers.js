@@ -15,22 +15,25 @@ module.exports = {
     get: (id) => db.query('SELECT * FROM "presentation" where "presentationID" = $1', [id]),
     getLastID: (userID) => db.query('SELECT "presentationID" FROM "presentation" WHERE "userID" = $1 ORDER BY "timestamp" DESC LIMIT 1', [userID]),
     getPresBySocket: (socket) => db.query('SELECT "presentationID" FROM "session" WHERE "socket" = $1', [socket]),
+    getPresByUser: (userID) => db.query('SELECT * FROM "presentation" WHERE "userID" = $1', [userID]),
     post: (userID) => db.query('INSERT INTO "presentation" ("userID") VALUES ($1)', [userID])
   },
   question: {
     truncate: () => db.query('DELETE FROM "question" where "questionID" >= 0'),
     get: (id) => db.query('SELECT * FROM "question" WHERE "questionID" = $1', [id]),
     getQuestionsBySocket: (socket) =>
-      db.query('SELECT * FROM "question" INNER JOIN "session" ON "session.presentationID" = "question.presentationID" AND "session.socket" = $1', [socket]),
+      db.query('SELECT * FROM "question" INNER JOIN "session" ON "session"."presentationID" = "question"."presentationID" AND "session"."socket" = $1', [socket]),
+    getQuestionsByPresentation: (presentationID) =>
+      db.query('SELECT * FROM "question" WHERE "presentationID" = $1', [presentationID]),
     post: (presentationID, type, question) => db.query('INSERT INTO "question" ("presentationID", "type", "question") VALUES ($1, $2, $3)', [presentationID, type, question])
   },
   answer: {
     truncate: () => db.query('DELETE FROM "answer" where "answerID" >= 0'),
-    get: (id) => db.query('SELECT * FROM "answer" WHERE "answerID" = $1', [id]),
+    get: () => db.query('SELECT * FROM "answer"'),
     getAnswerByQuestion: (id) => db.query('SELECT * FROM "answer" WHERE "questionID" = $1', [id]),
-    getCorrect: (id) => db.query('SELECT * FROM "answer" WHERE "questionID" = $1 AND "correct" = $2', [id, 0]),
+    getCorrect: (id) => db.query('SELECT * FROM "answer" WHERE "questionID" = $1 AND "correct" = $2', [id, 1]),
     post: (questionID, answer, correct) => db.query('INSERT INTO "answer" ("questionID", "answer", "correct") VALUES ($1, $2, $3)', [questionID, answer, correct]),
-    postMultiple: (values) => db.query('INSERT INTO "answer" ("questionID", "answer", "correct") VALUES $1', [values])
+    postMultiple: (values) => db.query('INSERT INTO "answer" ("questionID", "answer", "correct") VALUES ($1)', [values])
   },
   session: {
     truncate: () => db.query('DELETE FROM "session" where "sessionID" >= 0'),
