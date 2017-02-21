@@ -311,6 +311,24 @@ module.exports = {
     }
   },
 
+  getResponseByQandS: (req, res, next) => {
+    var qid = req.params.qid;
+    var sessionID = req.params.sessionID;
+    if (qid && sessionID) {
+      db.response.getResponseByQS(qid, sessionID).then(result => {
+        if (result.rows.length > 0) {
+          res.send(result.rows);
+        } else {
+          res.send('No responses for given question ID and sessionID')
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    } else {
+      res.status(400).send('Question Id or Session ID not provided');
+    }
+  },
+
   postResponse: (req, res, next) => {
     var response = req.body;
     if (req.body) {
