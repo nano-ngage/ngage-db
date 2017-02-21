@@ -47,6 +47,7 @@ module.exports = {
     get: (id) => db.query('SELECT * FROM "response" WHERE "responseID" = $1', [id]),
     getResponseByQ: (qid) => db.query('SELECT * FROM "response" WHERE "questionID" = $1', [qid]),
     getResponseByS: (sessionID) => db.query('SELECT * FROM "response" WHERE "sessionID" = $1', [sessionID]),
+    getResponseByQS: (qid, sessionID) => db.query('SELECT * FROM "response" WHERE "questionID" = $1 AND "sessionID" = $2', [qid, sessionID]),
     post: (sessionID, userID, questionID, answerID, content) => db.query('INSERT INTO "response" ("sessionID", "userID", "questionID", "answerID", "content") VALUES ($1, $2, $3, $4, $5) RETURNING "responseID"', [sessionID, userID, questionID, answerID, content]),
     postMultiple: (values) => db.query('INSERT INTO "response" ("sessionID", "userID", "questionID", "answerID", "content") VALUES' + values),
   }
