@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 echo "stopping running application"
-ssh $DEPLOY_USER@$DEPLOY_HOST 'docker stop nanongage/ngage-db'
-ssh $DEPLOY_USER@$DEPLOY_HOST 'docker rm nanongage/ngage-db'
+ssh $DEPLOY_USER@$DEPLOY_HOST 'docker stop ngage-db'
+ssh $DEPLOY_USER@$DEPLOY_HOST 'docker rm ngage-db'
 
 echo "pulling latest version of the code"
 ssh $DEPLOY_USER@$DEPLOY_HOST 'docker pull nanongage/ngage-db:latest'
