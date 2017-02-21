@@ -11,7 +11,7 @@ module.exports = {
         return '(' + qID + ', \'Amazing!\', 1), (' + qID + ', \'MOAR ANIMASHUNS\', 0), (' + qID + ', \'Meh...\', 0), (' + qID + ', \'FREEBIRD!\', 0)'
     },
       function(qID) {
-        return '(' + qID + ', \'It sure is swell!\', 0), (' + qID + ', \'It\'s the bee\'s knees!\', 1), (' + qID + ', \'Gee Golly, Mister!\', 0), (' + qID + ', \'You should kill yourself.\', 0)'
+        return '(' + qID + ', \'It sure is swell!\', 0), (' + qID + ', \'Its the bees knees!\', 1), (' + qID + ', \'Gee Golly, Mister!\', 0), (' + qID + ', \'You should kill yourself.\', 0)'
     },
       function(qID) {
         return '(' + qID + ', \'What a steal!\', 0), (' + qID + ', \'Tell me more...\', 0), (' + qID + ', \'Premium Schmemium\', 0), (' + qID + ', \'FREEBIRD!\', 1)'
