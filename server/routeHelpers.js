@@ -40,7 +40,20 @@ module.exports = {
     var correct = req.body.correct;
     if (qid && answer && correct) {
       db.answer.post(qid, answer, correct).then(result => {
-        res.end();
+        var answerID = result.rows[0].answerID;
+        if (answerID) {
+          db.answer.get(answerID).then(result2 => {
+          if (result2.rows.length > 0) {
+            res.send(result2.rows[0]);
+          } else {
+            res.send('No answer found for given ID')
+          }
+        }).catch(err => {
+          res.status(500).send(err);
+        })
+        } else {
+          res.send('answerID not returned')
+        }
       }).catch(err => {
         res.status(500).send(err);
       })
@@ -57,7 +70,7 @@ module.exports = {
       }
       answerString = answerString.slice(0, answerString.length - 2);
       db.answer.postMultiple(answerString).then(result => {
-        res.end();
+        res.send();
       }).catch(err => {
         res.status(500).send(err + answerString);
       })
@@ -130,7 +143,20 @@ module.exports = {
     var question = req.body.question;
     if (pid && type && question) {
       db.question.post(pid, type, question).then(result => {
-        res.end();
+        var qid = result.rows[0].questionID;
+        if (qid) {
+          db.question.get(qid).then(result2 => {
+          if (result2.rows.length > 0) {
+            res.send(result2.rows[0]);
+          } else {
+            res.send('No question found with given qID');
+          }
+          }).catch(err => {
+            res.status(500).send(err);
+          })
+        } else {
+          res.send('No questionID returned');
+        }
       }).catch(err => {
         res.status(500).send(err);
       })
@@ -174,10 +200,23 @@ module.exports = {
   },
 
   postPresentation: (req, res, next) => {
-    var user_id = req.body.user_id;
-    if (user_id) {
-      db.presentation.post(user_id).then(result => {
-        res.end();
+    var userID = req.body.userID;
+    if (userID) {
+      db.presentation.post(userID).then(result => {
+        var pid = result.rows[0].presentationID;
+        if (pid) {
+          db.presentation.get(pid).then(result2 => {
+            if (result2.rows.length > 0) {
+              res.send(result2.rows[0]);
+            } else {
+              res.send('No presentations with given ID')
+            }
+          }).catch(err => {
+            res.status(500).send(err);
+          })
+        } else {
+          res.send('no presentationID returned')
+        }
       }).catch(err => {
         res.status(500).send(err);
       })
@@ -203,12 +242,33 @@ module.exports = {
     }
   },
 
+  getAllSessions: (req, res, next) => {
+    db.session.getAll().then(result => {
+      res.send(result.rows);
+    }).catch(err => {
+      res.status(500).send(err);
+    })
+  },
+
   postSession: (req, res, next) => {
     var pid = req.body.presentationID;
     var socket = req.body.socket;
     if (pid && socket) {
       db.session.post(pid, socket).then(result => {
-        res.end();
+        var sessionID = result.rows[0].sessionID;
+        if (sessionID) {
+          db.session.get(sessionID).then(result2 => {
+            if (result2.rows.length > 0) {
+              res.send(result2.rows[0]);
+            } else {
+              res.send('No sessions for given sessionID')
+            }
+          }).catch(err => {
+            res.status(500).send(err);
+          })
+        } else {
+          res.send('No sessionID returned')
+        }
       }).catch(err => {
         res.status(500).send(err);
       })
@@ -255,9 +315,21 @@ module.exports = {
     var response = req.body;
     if (req.body) {
       db.response.post(response.sessionID, response.userID, response.questionID, response.answerID, response.content).then(result => {
-        res.end();
+        if (result.rows[0].responseID) {
+          db.response.get(result.rows[0].responseID).then(result2 => {
+            if (result2.rows.length > 0) {
+              res.send(result2.rows[0]);
+            } else {
+              res.send('No response found with given responseID');
+            }
+          }).catch(err => {
+            res.status(500).send(err);
+          })
+        } else {
+          res.send('posted without returning response ID')
+        }
       }).catch(err => {
-        res.status(500).send(err);
+        res.status(500).send(err + 'asldf;lkjf');
       })
     } else {
       res.status(400).send('response body not provided');
