@@ -70,7 +70,7 @@ module.exports = {
       }
       answerString = answerString.slice(0, answerString.length - 2);
       db.answer.postMultiple(answerString).then(result => {
-        res.send();
+        res.end();
       }).catch(err => {
         res.status(500).send(err + answerString);
       })
