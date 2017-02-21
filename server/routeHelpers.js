@@ -69,6 +69,7 @@ module.exports = {
         answerString += '(' + qid + ', \'' + answers[i].answer + '\', ' + (answers[i].correct ? 1 : 0) + "), ";
       }
       answerString = answerString.slice(0, answerString.length - 2);
+      console.log(answerString);
       db.answer.postMultiple(answerString).then(result => {
         res.end();
       }).catch(err => {
@@ -118,6 +119,18 @@ module.exports = {
     } else {
       res.status(400).send('socket not provided');
     }
+  },
+
+  getAllQuestions: (req, res, next) => {
+    db.question.getAll().then(result => {
+      if (result.rows.length > 0) {
+        res.send(result.rows);
+      } else {
+        res.status(400).send('no questions found in database');
+      }
+    }).catch(err => {
+      res.status(500).send(err);
+    })
   },
 
   getQuestionsByP: (req, res, next) => {
