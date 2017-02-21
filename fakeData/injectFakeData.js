@@ -5,11 +5,7 @@ var data = require('./fakeData');
 
 var cli = new pg.Client('postgres://ephqygbj:sTgEHTHK82B7Rc9WVZ92y8PEcAKkm8zh@babar.elephantsql.com:5432/ephqygbj');
 
-// "Saivickna";"Raveendran";"";"";"facebook|10101962619442927"
-// "Saivickna";"Raveendran";"saivickna.r@gmail.com";"";"google-oauth2|107680791295256315609"
-
-// CREATE USER
-
+// CREATE USER PRESENTER
 db.user.post(0, "Saivickna", "Raveendran", "", "", "facebook|10101962619442927").then(UPresult=> {
   console.log('successfully posted user');
   // CREATE PRESENTATION
@@ -19,24 +15,70 @@ db.user.post(0, "Saivickna", "Raveendran", "", "", "facebook|10101962619442927")
       // CREATE QUESTIONS
       var pID = PPresult.rows[0].presentationID;
       //  POST QUESTION 1
-      for (var i = 0; i < 4; i++) {
-
-        db.question.post(pID, "1", data.questions[i]).then(QPresult => {
+        db.question.post(pID, "1", data.questions[0]).then(QPresult => {
+            console.log('successfully posted question ' + 1)
             // ADD ANSWERS FOR QUESTION
             var qID = QPresult.rows[0].questionID;
-            var answers = data.aString[i](qID);
+            var answers = data.aString[0](qID);
             // console.log(answers);
             db.answer.postMultiple(answers).then(Aresult => {
               console.log('posted answers for question');
+              // QUESTION 2
+              db.question.post(pID, "1", data.questions[1]).then(QPresult => {
+                  console.log('successfully posted question ' + 2)
+                  // ADD ANSWERS FOR QUESTION 2
+                  var qID = QPresult.rows[0].questionID;
+                  var answers = data.aString[1](qID);
+                  // console.log(answers);
+                  db.answer.postMultiple(answers).then(Aresult => {
+                    console.log('posted answers for question 2');
+                    // QUESTION 3
+                    db.question.post(pID, "1", data.questions[2]).then(QPresult => {
+                        console.log('successfully posted question ' + 3)
+                        // ADD ANSWERS FOR QUESTION 3
+                        var qID = QPresult.rows[0].questionID;
+                        var answers = data.aString[2](qID);
+                        // console.log(answers);
+                        db.answer.postMultiple(answers).then(Aresult => {
+                          console.log('posted answers for question 3');
+                          // QUESTION 4
+                          db.question.post(pID, "1", data.questions[3]).then(QPresult => {
+                                console.log('successfully posted question ' + 4)
+                                // ADD ANSWERS FOR QUESTION 4
+                                var qID = QPresult.rows[0].questionID;
+                                var answers = data.aString[3](qID);
+                                // console.log(answers);
+                                db.answer.postMultiple(answers).then(Aresult => {
+                                  console.log('posted answers for question 4');
+                                })
+                                .catch(err => {
+                                  console.log(err + ' failed to post answers to question 4');
+                                })
+                              }).catch(err => {
+                              console.log(err + ' failed to post question')
+                            })
+                        })
+                        .catch(err => {
+                          console.log(err + ' failed to post answers to question');
+                        })
+                      }).catch(err => {
+                      console.log(err + ' failed to post question')
+                    })
+                  })
+                  .catch(err => {
+                    console.log(err + ' failed to post answers to question');
+                  })
+                }).catch(err => {
+                console.log(err + ' failed to post question')
+              })
             })
+
             .catch(err => {
               console.log(err + ' failed to post answers to question');
             })
           }).catch(err => {
           console.log(err + ' failed to post question')
         })
-        console.log('successfully posted question ' + (i + 1))
-      }
 
       //POST SESSION
       db.session.post(pID, "Tsocket").then(Sresult => {
@@ -45,20 +87,9 @@ db.user.post(0, "Saivickna", "Raveendran", "", "", "facebook|10101962619442927")
         console.log(err + ' failed to post session');
       })
 
-
   }).catch(err => {
     console.log(err + ' failed to post presentation')
   })
 }).catch(err => {
   console.log('failed to post user');
 })
-
-
-  // var answers = data.aString[0](21);
-  // console.log(answers);
-  // db.answer.postMultiple('(21, \'A\', 0)').then(Aresult => {
-  //   console.log('posted answers for question');
-  // })
-  // .catch(err => {
-  //   console.log(err + ' failed to post answers to question');
-  // })
