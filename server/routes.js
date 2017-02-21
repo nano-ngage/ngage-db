@@ -23,6 +23,7 @@ app.post('/aByQ', helpers.postAnswer); // good+
 app.post('/aByQs', helpers.postAnswers); // good
 
 // QUESTIONS
+app.get('/allQ', helpers.getAllQuestions);
 app.get('/qBySocket/:socket', helpers.getQuestions); // good
 app.get('/qByP/:pid', helpers.getQuestionsByP) // good
 app.post('/qByP', helpers.postQuestion); // good+
