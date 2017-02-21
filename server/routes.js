@@ -19,27 +19,28 @@ app.post('/login', helpers.login); // good
 app.get('/allA', helpers.getAllAnswers); // good
 app.get('/aByQ/:id', helpers.getAnswers); // good
 app.get('/aByCorrect/:qid', helpers.getCorrectAnswer);// good
-app.post('/aByQ', helpers.postAnswer); // good
+app.post('/aByQ', helpers.postAnswer); // good+
 app.post('/aByQs', helpers.postAnswers); // good
 
 // QUESTIONS
 app.get('/qBySocket/:socket', helpers.getQuestions); // good
 app.get('/qByP/:pid', helpers.getQuestionsByP) // good
-app.post('/qByP', helpers.postQuestion); // good
+app.post('/qByP', helpers.postQuestion); // good+
 
 // PRESENTATION
 app.get('/pBySocket/:socket', helpers.getPresentationByS); //good
 app.get('/pByU/:id', helpers.getPresentationByU) // good
-app.post('/postPByU', helpers.postPresentation); // good
+app.post('/postPByU', helpers.postPresentation); // good+
 
 // SESSION
 app.get('/sByS/:socket', helpers.getSession); // good
-app.post('/sByPS', helpers.postSession); // good
+app.get('/sAll', helpers.getAllSessions); // good
+app.post('/sByPS', helpers.postSession); // good+
 
 // RESPONSE
-app.get('/rByQ/:qid', helpers.getResponseByQuestion);
-app.get('/rByS/:sessionID', helpers.getResponseBySession);
-app.post('/rPost', helpers.postResponse);
-app.post('/rPostMultiple', helpers.postMultiResponses);
+app.get('/rByQ/:qid', helpers.getResponseByQuestion); //good
+app.get('/rByS/:sessionID', helpers.getResponseBySession); //good
+app.post('/rPost', helpers.postResponse); //good+
+app.post('/rPostMultiple', helpers.postMultiResponses); //good
 
 module.exports = app;
