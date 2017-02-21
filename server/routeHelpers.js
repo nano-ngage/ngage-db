@@ -191,7 +191,7 @@ module.exports = {
     if (socket) {
       db.session.getSessionBySocket(socket).then(result => {
         if (result.rows.length > 0) {
-          res.send(result.rows);
+          res.send(result.rows[0]);
         } else {
           res.send('-1');
         }
@@ -217,5 +217,74 @@ module.exports = {
     }
   },
 
+  getResponseByQuestion: (req, res, next) => {
+    var qid = req.params.qid;
+    if (qid) {
+      db.response.getResponseByQ(qid).then(result => {
+        if (result.rows.length > 0) {
+          res.send(result.rows);
+        } else {
+          res.send('No Responses for given Question ID');
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    } else {
+      res.status(400).send('qid not provided');
+    }
+  },
+
+  getResponseBySession: (req, res, next) => {
+    var sessionID = req.params.sessionID;
+    if (sessionID) {
+      db.response.getResponseByS(sessionID).then(result => {
+        if (result.rows.length > 0) {
+          res.send(result.rows);
+        } else {
+          res.send('No responses with given Session ID');
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    } else {
+      res.status(400).send('session ID not provided');
+    }
+  },
+
+  postResponse: (req, res, next) => {
+    var response = req.body;
+    if (req.body) {
+      db.response.post(response.sessionID, response.userID, response.questionID, response.answerID, response.content).then(result => {
+        res.end();
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    } else {
+      res.status(400).send('response body not provided');
+    }
+  },
+
+  postMultiResponses: (req, res, next) => {
+    // to be used after each unique question
+    // sessionID and questionID will be constant
+    var sessionID = req.body.sessionID;
+    var qid = req.body.questionID;
+    // response should contain userID, answerID, and content
+    var response = req.body.response;
+    if (sessionID && qid && response) {
+      var responseString = '';
+      for (var i = 0; i < response.length; i++) {
+        responseString += '(' + sessionID + ', ' + response[i].userID + ', ' + qid + ', ' + response[i].answerID + ', \'' + response[i].content + '\'' + '), '
+      }
+      responseString = responseString.slice(0, responseString.length - 2);
+      db.response.postMultiple(responseString).then(result => {
+        res.end();
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    } else {
+      res.send(400).status('SessionID, or questionID, or response body not provided');
+    }
+  },
 }
 
