@@ -8,7 +8,7 @@ module.exports = {
     truncate: () => db.query('DELETE FROM "user" where "userID" >= 0'),
     get: (id) => db.query('SELECT * FROM "user" where "userID" = $1', [id]),
     getByAuth: (id) => db.query('SELECT * FROM "user" where "authID" = $1', [id]),
-    post: (type, firstName, lastName, email, password, authID) => db.query('INSERT INTO "user" ("type","firstName","lastName","email","password","authID") VALUES ($1, $2, $3, $4, $5, $6)', [type, firstName, lastName, email, password, authID])
+    post: (type, firstName, lastName, email, password, authID) => db.query('INSERT INTO "user" ("type","firstName","lastName","email","password","authID") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "userID"', [type, firstName, lastName, email, password, authID])
   },
   presentation: {
     truncate: () => db.query('DELETE FROM "presentation" where "presentationID" >= 0'),
@@ -22,7 +22,7 @@ module.exports = {
     truncate: () => db.query('DELETE FROM "question" where "questionID" >= 0'),
     get: (id) => db.query('SELECT * FROM "question" WHERE "questionID" = $1', [id]),
     getQuestionsBySocket: (socket) =>
-      db.query('SELECT * FROM "question" INNER JOIN "session" ON "session"."presentationID" = "question"."presentationID" AND "session"."socket" = $1', [socket]),
+      db.query('SELECT DISTINCT "questionID", "question" FROM "question" INNER JOIN "session" ON "session"."presentationID" = "question"."presentationID" AND "session"."socket" = $1', [socket]),
     getQuestionsByPresentation: (presentationID) =>
       db.query('SELECT * FROM "question" WHERE "presentationID" = $1', [presentationID]),
     post: (presentationID, type, question) => db.query('INSERT INTO "question" ("presentationID", "type", "question") VALUES ($1, $2, $3) RETURNING "questionID"', [presentationID, type, question])
