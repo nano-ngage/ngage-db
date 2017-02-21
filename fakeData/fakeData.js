@@ -5,28 +5,16 @@ module.exports = {
 
   aString: [
     function(qID) {
-      return {
-        "questionID": qID,
-        "answers": [{"answer": "A", "correct": "false"}, {"answer": "B", "correct": "false"}, {"answer": "C", "correct": "false"}, {"answer": "D", "correct": "true"}]
-      };
+      return '(' + qID + ', \'A\', 0), (' + qID + ', \'B\', 0), (' + qID + ', \'C\', 0), (' + qID + ', \'D\', 1)'
     },
       function(qID) {
-      return {
-        "questionID": qID,
-        "answers": [{"answer": "Amazing!", "correct": "true"}, {"answer": "MOAR ANIMASHUNS", "correct": "false"}, {"answer": "Meh...", "correct": "false"}, {"answer": "FREEBIRD!", "correct": "false"}]
-      };
+        return '(' + qID + ', \'Amazing!\', 1), (' + qID + ', \'MOAR ANIMASHUNS\', 0), (' + qID + ', \'Meh...\', 0), (' + qID + ', \'FREEBIRD!\', 0)'
     },
       function(qID) {
-      return {
-        "questionID": qID,
-        "answers": [{"answer": "It sure is swell!", "correct": "false"}, {"answer": "It's the bee's knees!", "correct": "true"}, {"answer": "Gee Golly, Mister!", "correct": "false"}, {"answer": "You should kill yourself.", "correct": "false"}]
-      };
+        return '(' + qID + ', \'It sure is swell!\', 0), (' + qID + ', \'It\'s the bee\'s knees!\', 1), (' + qID + ', \'Gee Golly, Mister!\', 0), (' + qID + ', \'You should kill yourself.\', 0)'
     },
       function(qID) {
-      return {
-        "questionID": qID,
-        "answers": [{"answer": "It's a steal!", "correct": "false"}, {"answer": "Tell me more...", "correct": "false"}, {"answer": "Premium Schmemium", "correct": "false"}, {"answer": "FREEBIRD!", "correct": "true"}]
-      };
+        return '(' + qID + ', \'What a steal!\', 0), (' + qID + ', \'Tell me more...\', 0), (' + qID + ', \'Premium Schmemium\', 0), (' + qID + ', \'FREEBIRD!\', 1)'
     },
   ],
 
