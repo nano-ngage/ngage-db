@@ -44,6 +44,9 @@ module.exports = {
   response: {
     truncate: () => db.query('DELETE FROM "response" where "responseID" >= 0'),
     get: (id) => db.query('SELECT * FROM "response" WHERE "responseID" = $1', [id]),
-    post: (sessionID, userID, questionID, answerID, content) => db.query('INSERT INTO "response" ("sessionID", "userID", "questionID", "answerID", "content") VALUES ($1, $2, $3, $4, $5)', [sessionID, userID, questionID, answerID, content])
+    getResponseByQ: (qid) => db.query('SELECT * FROM "response" WHERE "questionID" = $1', [qid]),
+    getResponseByS: (sessionID) => db.query('SELECT * FROM "response" WHERE "sessionID" = $1', [sessionID]),
+    post: (sessionID, userID, questionID, answerID, content) => db.query('INSERT INTO "response" ("sessionID", "userID", "questionID", "answerID", "content") VALUES ($1, $2, $3, $4, $5)', [sessionID, userID, questionID, answerID, content]),
+    postMultiple: (values) => db.query('INSERT INTO "response" ("sessionID", "userID", "questionID", "answerID", "content") VALUES' + values),
   }
 }

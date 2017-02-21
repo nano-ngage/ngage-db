@@ -30,11 +30,16 @@ app.post('/qByP', helpers.postQuestion); // good
 // PRESENTATION
 app.get('/pBySocket/:socket', helpers.getPresentationByS); //good
 app.get('/pByU/:id', helpers.getPresentationByU) // good
-app.post('/postpByU', helpers.postPresentation); // good
+app.post('/postPByU', helpers.postPresentation); // good
 
 // SESSION
 app.get('/sByS/:socket', helpers.getSession); // good
 app.post('/sByPS', helpers.postSession); // good
 
+// RESPONSE
+app.get('/rByQ/:qid', helpers.getResponseByQuestion);
+app.get('/rByS/:sessionID', helpers.getResponseBySession);
+app.post('/rPost', helpers.postResponse);
+app.post('/rPostMultiple', helpers.postMultiResponses);
 
 module.exports = app;
