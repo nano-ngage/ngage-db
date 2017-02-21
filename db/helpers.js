@@ -21,6 +21,7 @@ module.exports = {
   question: {
     truncate: () => db.query('DELETE FROM "question" where "questionID" >= 0'),
     get: (id) => db.query('SELECT * FROM "question" WHERE "questionID" = $1', [id]),
+    getAll: () => db.query('SELECT * FROM "question"'),
     getQuestionsBySocket: (socket) =>
       db.query('SELECT DISTINCT "questionID", "question" FROM "question" INNER JOIN "session" ON "session"."presentationID" = "question"."presentationID" AND "session"."socket" = $1', [socket]),
     getQuestionsByPresentation: (presentationID) =>
