@@ -40,6 +40,7 @@ app.post('/sByPS', helpers.postSession); // good+
 // RESPONSE
 app.get('/rByQ/:qid', helpers.getResponseByQuestion); //good
 app.get('/rByS/:sessionID', helpers.getResponseBySession); //good
+app.get('/rByQS/:qid/:sessionID', helpers.getResponseByQandS);// good
 app.post('/rPost', helpers.postResponse); //good+
 app.post('/rPostMultiple', helpers.postMultiResponses); //good
 
