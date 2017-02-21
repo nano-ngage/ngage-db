@@ -56,7 +56,6 @@ module.exports = {
         answerString += '(' + qid + ', \'' + answers[i].answer + '\', ' + (answers[i].correct ? 1 : 0) + "), ";
       }
       answerString = answerString.slice(0, answerString.length - 2);
-      console.log(answerString);
       db.answer.postMultiple(answerString).then(result => {
         res.end();
       }).catch(err => {
@@ -129,7 +128,6 @@ module.exports = {
     var pid = req.body.presentationID;
     var type = req.body.type;
     var question = req.body.question;
-    console.log(pid);
     if (pid && type && question) {
       db.question.post(pid, type, question).then(result => {
         res.end();
@@ -179,7 +177,6 @@ module.exports = {
     var user_id = req.body.user_id;
     if (user_id) {
       db.presentation.post(user_id).then(result => {
-        console.log(result);
         res.end();
       }).catch(err => {
         res.status(500).send(err);
@@ -211,7 +208,6 @@ module.exports = {
     var socket = req.body.socket;
     if (pid && socket) {
       db.session.post(pid, socket).then(result => {
-        console.log(result);
         res.end();
       }).catch(err => {
         res.status(500).send(err);
