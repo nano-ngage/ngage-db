@@ -250,13 +250,14 @@ module.exports = {
       // check if there are answers for question
       db.answer.getAnswerByQuestion(qid).then(aRes => {
         // if there are answers, delete answers first
+        var delString = '(NULL)';
         if (aRes.rows.length > 0) {
-          var delString = '(';
+          delString = '(';
           for (var i = 0; i < aRes.rows.length; i++) {
             delString += aRes.rows[i].answerID + ', '
           }
           delString = delString.slice(0, delString.length - 2) + ')';
-
+        }
           db.answer.delete(delString).then(adelRes => {
             db.question.delete(qid).then(result => {
               db.question.get(qid).then(result2 => {
@@ -272,27 +273,9 @@ module.exports = {
             }).catch(err => {
               res.status(500).send(err);
             })
-
           }).catch(err => {
             res.status(500).send(err);
           })
-        } else {
-        // if no answers, continue to delete question
-          db.question.delete(qid).then(result => {
-            db.question.get(qid).then(result2 => {
-              if (result2.rows.length > 0) {
-                console.log('question failed to delete');
-              } else {
-                console.log('Question Deleted');
-              }
-                res.end();
-            }).catch(err => {
-              res.status(500).send(err);
-            })
-          }).catch(err => {
-            res.status(500).send(err);
-          })
-        }
       }).catch(err => {
         res.status(500).send(err);
       })
