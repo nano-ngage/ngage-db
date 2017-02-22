@@ -32,13 +32,15 @@ app.get('/allQ', helpers.getAllQuestions); // good
 app.get('/qBySocket/:socket', helpers.getQuestions); // good
 app.get('/qByP/:pid', helpers.getQuestionsByP) // good
 app.post('/qByP', helpers.postQuestion); // good+
-app.put('/updateQ/:qid', helpers.updateQuestion);
+app.put('/updateQ/:qid', helpers.updateQuestion); // good+
+app.delete('/deleteQ/:qid', helpers.deleteQuestion); // good+
 
 // PRESENTATION
 app.get('/pBySocket/:socket', helpers.getPresentationByS); //good
 app.get('/pByU/:id', helpers.getPresentationByU); // good
 app.get('/pByULatest/:id/', helpers.getLatestPresentationByUser); // good
 app.post('/postPByU', helpers.postPresentation); // good+
+app.put('/updateP/:pid', helpers.updatePresentation);
 
 // SESSION
 app.get('/sByS/:socket', helpers.getSession); // good
