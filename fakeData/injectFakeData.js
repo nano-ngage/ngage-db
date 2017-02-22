@@ -10,7 +10,7 @@ db.user.post(0, "Saivickna", "Raveendran", "", "", "facebook|10101962619442927")
   console.log('successfully posted user');
   // CREATE PRESENTATION
   var uID = UPresult.rows[0].userID;
-  db.presentation.post(uID).then(PPresult => {
+  db.presentation.post(uID, 'My Great Presentation').then(PPresult => {
     console.log('successfully posted presentation');
       // CREATE QUESTIONS
       var pID = PPresult.rows[0].presentationID;
