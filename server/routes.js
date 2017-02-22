@@ -12,6 +12,9 @@ app.options('*', cors());
 
 app.get('/', (req, res) => {res.send('Hello world')});
 
+// USERS
+app.get('/allU', helpers.getAllUsers);
+
 //LOGIN
 app.post('/login', helpers.login); // good
 
@@ -21,16 +24,20 @@ app.get('/aByQ/:id', helpers.getAnswers); // good
 app.get('/aByCorrect/:qid', helpers.getCorrectAnswer);// good
 app.post('/aByQ', helpers.postAnswer); // good+
 app.post('/aByQs', helpers.postAnswers); // good
+app.put('/updateA/:aid', helpers.updateAnswer); // good
+app.delete('/deleteA/:aid', helpers.deleteAnswer); // good
 
 // QUESTIONS
-app.get('/allQ', helpers.getAllQuestions);
+app.get('/allQ', helpers.getAllQuestions); // good
 app.get('/qBySocket/:socket', helpers.getQuestions); // good
 app.get('/qByP/:pid', helpers.getQuestionsByP) // good
 app.post('/qByP', helpers.postQuestion); // good+
+app.put('/updateQ/:qid', helpers.updateQuestion);
 
 // PRESENTATION
 app.get('/pBySocket/:socket', helpers.getPresentationByS); //good
-app.get('/pByU/:id', helpers.getPresentationByU) // good
+app.get('/pByU/:id', helpers.getPresentationByU); // good
+app.get('/pByULatest/:id/', helpers.getLatestPresentationByUser); // good
 app.post('/postPByU', helpers.postPresentation); // good+
 
 // SESSION

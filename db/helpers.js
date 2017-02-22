@@ -27,22 +27,12 @@ module.exports = {
       db.query('SELECT DISTINCT "questionID", "question" FROM "question" INNER JOIN "session" ON "session"."presentationID" = "question"."presentationID" AND "session"."socket" = $1', [socket]),
     getQuestionsByPresentation: (presentationID) =>
       db.query('SELECT * FROM "question" WHERE "presentationID" = $1', [presentationID]),
-<<<<<<< ae1d2f4ceb46e08ea8b946cbe774cb22609b99a6
-    post: (presentationID, type, question) => db.query('INSERT INTO "question" ("presentationID", "type", "question") VALUES ($1, $2, $3) RETURNING "questionID"', [presentationID, type, question])
-=======
     post: (presentationID, type, question) => db.query('INSERT INTO "question" ("presentationID", "type", "question") VALUES ($1, $2, $3) RETURNING "questionID"', [presentationID, type, question]),
     put: (presentationiD, type, question, qid) => db.query('UPDATE "question" SET "presentationID" = $1, "type" = $2, "question" = $3 WHERE "questionID" = $4', [presentationID, type, question, qid]),
->>>>>>> (feat) add update/delete queries for answer
   },
   answer: {
     truncate: () => db.query('DELETE FROM "answer" where "answerID" >= 0'),
     get: (id) => db.query('SELECT * FROM "answer" WHERE "answerID" = $1', [id]),
-<<<<<<< ae1d2f4ceb46e08ea8b946cbe774cb22609b99a6
-    getAnswerByQuestion: (id) => db.query('SELECT * FROM "answer" WHERE "questionID" = $1', [id]),
-    getCorrect: (id) => db.query('SELECT * FROM "answer" WHERE "questionID" = $1 AND "correct" = $2', [id, 1]),
-    post: (questionID, answer, correct) => db.query('INSERT INTO "answer" ("questionID", "answer", "correct") VALUES ($1, $2, $3) RETURNING "answerID"', [questionID, answer, correct]),
-    postMultiple: (values) => db.query('INSERT INTO "answer" ("questionID", "answer", "correct") VALUES ' + values)
-=======
     getAll: () => db.query('SELECT * FROM "answer"'),
     getAnswerByQuestion: (id) => db.query('SELECT * FROM "answer" WHERE "questionID" = $1', [id]),
     getCorrect: (id) => db.query('SELECT * FROM "answer" WHERE "questionID" = $1 AND "correct" = $2', [id, 1]),
@@ -50,7 +40,6 @@ module.exports = {
     postMultiple: (values) => db.query('INSERT INTO "answer" ("questionID", "answer", "correct") VALUES ' + values),
     update: (questionID, answer, correct, id) => db.query('UPDATE "answer" SET "questionID" = $1, "answer" = $2, "correct" = $3 WHERE "answerID" = $4', [questionID, answer, correct, id]),
     delete: (id) => db.query('DELETE FROM "answer" WHERE "answerID" = $1', [id])
->>>>>>> (feat) add update/delete queries for answer
   },
   session: {
     truncate: () => db.query('DELETE FROM "session" where "sessionID" >= 0'),
