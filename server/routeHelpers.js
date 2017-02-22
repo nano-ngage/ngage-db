@@ -114,7 +114,9 @@ module.exports = {
   deleteAnswer: (req, res, next) => {
     var aid = req.params.aid;
     if (aid) {
-      db.answer.delete(aid).then(result => {
+    var string = '(' + aid + ')';
+      db.answer.delete(string).then(result => {
+        console.log('answer ' + aid + ' deleted')
         res.end();
       });
     } else {
@@ -219,6 +221,86 @@ module.exports = {
     }
   },
 
+  updateQuestion: (req, res, next) => {
+    var qid = req.params.qid;
+    var type = req.body.type;
+    var question = req.body.question;
+    if (qid && type && question) {
+      db.question.put(type, question, qid).then(result => {
+        db.question.get(qid).then(result2 => {
+          if (result2.rows.length > 0) {
+            res.send(result2.rows[0]);
+          } else {
+            res.status(400).send('No question found for given ID');
+          }
+        }).catch(err => {
+          res.status(500).send(err + 'error getting question');
+        })
+      }).catch(err => {
+        res.status(500).send(err + 'error updating question');
+      })
+    } else {
+      res.status(400).send('question ID not provided');
+    }
+  },
+
+  deleteQuestion: (req, res, next) => {
+    var qid = req.params.qid;
+    if (qid) {
+      // check if there are answers for question
+      db.answer.getAnswerByQuestion(qid).then(aRes => {
+        // if there are answers, delete answers first
+        if (aRes.rows.length > 0) {
+          var delString = '(';
+          for (var i = 0; i < aRes.rows.length; i++) {
+            delString += aRes.rows[i].answerID + ', '
+          }
+          delString = delString.slice(0, delString.length - 2) + ')';
+
+          db.answer.delete(delString).then(adelRes => {
+            db.question.delete(qid).then(result => {
+              db.question.get(qid).then(result2 => {
+                if (result2.rows.length > 0) {
+                  console.log('question failed to delete');
+                } else {
+                  console.log('Question Deleted');
+                }
+                  res.end();
+              }).catch(err => {
+                res.status(500).send(err);
+              })
+            }).catch(err => {
+              res.status(500).send(err);
+            })
+
+          }).catch(err => {
+            res.status(500).send(err);
+          })
+        } else {
+        // if no answers, continue to delete question
+          db.question.delete(qid).then(result => {
+            db.question.get(qid).then(result2 => {
+              if (result2.rows.length > 0) {
+                console.log('question failed to delete');
+              } else {
+                console.log('Question Deleted');
+              }
+                res.end();
+            }).catch(err => {
+              res.status(500).send(err);
+            })
+          }).catch(err => {
+            res.status(500).send(err);
+          })
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    } else {
+      res.status(400).send('question ID not provided');
+    }
+  },
+
   getPresentationByS: (req, res, next) => {
     var socket = req.params.socket;
     if (socket) {
@@ -291,27 +373,6 @@ module.exports = {
       })
     } else {
       res.status(400).send('user ID not provided');
-    }
-  },
-
-  updateQuestion: (req, res, next) => {
-    var qid = req.params.qid;
-    if (qid) {
-      db.question.put(qid).then(result => {
-        db.get(qid).then(result2 => {
-          if (result2.rows.length > 0) {
-            res.send(result2.rows[0]);
-          } else {
-            res.status(400).send('No question found for given ID');
-          }
-        }).catch(err => {
-          res.status(500).send(err + 'error getting question');
-        })
-      }).catch(err => {
-        res.status(500).send(err + 'error updating question');
-      })
-    } else {
-      res.status(400).send('question ID not provided');
     }
   },
 
