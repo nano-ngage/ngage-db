@@ -13,11 +13,11 @@ DROP TABLE IF EXISTS "presentation" CASCADE;
 DROP TABLE IF EXISTS "user" CASCADE;
 -- ---
 -- Table 'user'
--- 
+--
 -- ---
 
 DROP TABLE IF EXISTS "user";
-    
+
 CREATE TABLE "user" (
   "userID" SERIAL NOT NULL,
   "type" INTEGER NOT NULL DEFAULT 1,
@@ -33,14 +33,15 @@ CREATE TABLE "user" (
 
 -- ---
 -- Table 'presentation'
--- 
+--
 -- ---
 
 DROP TABLE IF EXISTS "presentation";
-    
+
 CREATE TABLE "presentation" (
   "presentationID" SERIAL NOT NULL,
   "userID" INTEGER NOT NULL DEFAULT -1,
+  "title" VARCHAR(100) NOT NULL,
   "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY ("presentationID")
@@ -48,11 +49,11 @@ CREATE TABLE "presentation" (
 
 -- ---
 -- Table 'questionID'
--- 
+--
 -- ---
 
 DROP TABLE IF EXISTS "question";
-    
+
 CREATE TABLE "question" (
   "questionID" SERIAL NOT NULL,
   "presentationID" INTEGER NOT NULL DEFAULT -1,
@@ -65,11 +66,11 @@ CREATE TABLE "question" (
 
 -- ---
 -- Table 'answer'
--- 
+--
 -- ---
 
 DROP TABLE IF EXISTS "answer";
-    
+
 CREATE TABLE "answer" (
   "answerID" SERIAL NOT NULL,
   "questionID" INTEGER NOT NULL DEFAULT -1,
@@ -82,11 +83,11 @@ CREATE TABLE "answer" (
 
 -- ---
 -- Table 'session'
--- 
+--
 -- ---
 
 DROP TABLE IF EXISTS "session";
-    
+
 CREATE TABLE "session" (
   "sessionID" SERIAL NOT NULL,
   "presentationID" INTEGER NOT NULL DEFAULT -1,
@@ -98,11 +99,11 @@ CREATE TABLE "session" (
 
 -- ---
 -- Table 'response'
--- 
+--
 -- ---
 
 DROP TABLE IF EXISTS "response";
-    
+
 CREATE TABLE "response" (
   "responseID" SERIAL NOT NULL,
   "sessionID" INTEGER NOT NULL DEFAULT -1,
@@ -117,7 +118,7 @@ CREATE TABLE "response" (
 
 
 -- ---
--- Foreign Keys 
+-- Foreign Keys
 -- ---
 
 ALTER TABLE "presentation" ADD FOREIGN KEY ("userID") REFERENCES "user" ("userID");
