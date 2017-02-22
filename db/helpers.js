@@ -17,7 +17,7 @@ module.exports = {
     getLastID: (userID) => db.query('SELECT "presentationID" FROM "presentation" WHERE "userID" = $1 ORDER BY "updatedAt" DESC LIMIT 1', [userID]),
     getPresBySocket: (socket) => db.query('SELECT "presentationID" FROM "session" WHERE "socket" = $1', [socket]),
     getPresByUser: (userID) => db.query('SELECT * FROM "presentation" WHERE "userID" = $1', [userID]),
-    post: (userID) => db.query('INSERT INTO "presentation" ("userID") VALUES ($1) RETURNING "presentationID"', [userID])
+    post: (userID, title) => db.query('INSERT INTO "presentation" ("userID", "title") VALUES ($1, $2) RETURNING "presentationID"', [userID, title])
   },
   question: {
     truncate: () => db.query('DELETE FROM "question" where "questionID" >= 0'),
@@ -28,7 +28,8 @@ module.exports = {
     getQuestionsByPresentation: (presentationID) =>
       db.query('SELECT * FROM "question" WHERE "presentationID" = $1', [presentationID]),
     post: (presentationID, type, question) => db.query('INSERT INTO "question" ("presentationID", "type", "question") VALUES ($1, $2, $3) RETURNING "questionID"', [presentationID, type, question]),
-    put: (presentationiD, type, question, qid) => db.query('UPDATE "question" SET "presentationID" = $1, "type" = $2, "question" = $3 WHERE "questionID" = $4', [presentationID, type, question, qid]),
+    put: (type, question, qid) => db.query('UPDATE "question" SET "type" = $1, "question" = $2 WHERE "questionID" = $3', [type, question, qid]),
+    delete: (qid) => db.query('DELETE FROM "question" WHERE "questionID" = $1', [qid]),
   },
   answer: {
     truncate: () => db.query('DELETE FROM "answer" where "answerID" >= 0'),
@@ -38,8 +39,8 @@ module.exports = {
     getCorrect: (id) => db.query('SELECT * FROM "answer" WHERE "questionID" = $1 AND "correct" = $2', [id, 1]),
     post: (questionID, answer, correct) => db.query('INSERT INTO "answer" ("questionID", "answer", "correct") VALUES ($1, $2, $3) RETURNING "answerID"', [questionID, answer, correct]),
     postMultiple: (values) => db.query('INSERT INTO "answer" ("questionID", "answer", "correct") VALUES ' + values),
-    update: (questionID, answer, correct, id) => db.query('UPDATE "answer" SET "questionID" = $1, "answer" = $2, "correct" = $3 WHERE "answerID" = $4', [questionID, answer, correct, id]),
-    delete: (id) => db.query('DELETE FROM "answer" WHERE "answerID" = $1', [id])
+    update: (answer, correct, id) => db.query('UPDATE "answer" SET "answer" = $1, "correct" = $2 WHERE "answerID" = $3', [answer, correct, id]),
+    delete: (id) => db.query('DELETE FROM "answer" WHERE "answerID" IN ' + id),
   },
   session: {
     truncate: () => db.query('DELETE FROM "session" where "sessionID" >= 0'),
