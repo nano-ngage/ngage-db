@@ -1,6 +1,14 @@
 var db = require('../db/helpers');
 
 module.exports = {
+  getAllUsers: (req, res, next) => {
+    db.user.getAll().then(result => {
+      res.send(result.rows);
+    }).catch(err => {
+      res.status(500).send(err);
+    })
+  },
+
   getAnswers: (req, res, next) => {
     if (req.params.id) {
       db.answer.getAnswerByQuestion(req.params.id).then(result => {
@@ -14,10 +22,11 @@ module.exports = {
   },
 
   getAllAnswers: (req, res, next) => {
-    db.answer.get().then(result => {
+    db.answer.getAll().then(result => {
+      console.log(result.rows)
       res.send(result.rows);
     }).catch(err => {
-      res.status(500).send(err);
+      res.status(500).send(err + ' error with getting all ans');
     })
   },
 
@@ -69,7 +78,6 @@ module.exports = {
         answerString += '(' + qid + ', \'' + answers[i].answer + '\', ' + (answers[i].correct ? 1 : 0) + "), ";
       }
       answerString = answerString.slice(0, answerString.length - 2);
-      console.log(answerString);
       db.answer.postMultiple(answerString).then(result => {
         res.end();
       }).catch(err => {
@@ -78,6 +86,39 @@ module.exports = {
 
     } else {
       res.status(400).send('question ID/answers not provided');
+    }
+  },
+
+  updateAnswer: (req, res, next) => {
+    var qid = req.body.questionID;
+    var answer = req.body.answer;
+    var correct = req.body.correct;
+    var aid = req.params.aid;
+    if (qid && answer && correct && aid) {
+        db.answer.update(qid, answer, correct, aid).then(result => {
+          db.answer.get(aid).then(result2 => {
+            if (result2.rows.length > 0) {
+              res.send(result2.rows[0]);
+            } else {
+              res.status(400).send('No answer for given aID');
+            }
+          })
+        }).catch(err => {
+          res.status(500).send(err);
+        })
+    } else {
+      res.status(400).send('QID, answer, correct, or answerID not provided');
+    }
+  },
+
+  deleteAnswer: (req, res, next) => {
+    var aid = req.params.aid;
+    if (aid) {
+      db.answer.delete(aid).then(result => {
+        res.end();
+      });
+    } else {
+      res.status(400).send('answerID not provided');
     }
   },
 
@@ -212,6 +253,21 @@ module.exports = {
     }
   },
 
+  getLatestPresentationByUser: (req, res, next) => {
+    var userID = req.params.id;
+    if (userID) {
+      db.presentation.getLastID(userID).then(result => {
+        if (result.rows.length > 0) {
+          res.send(result.rows[0]);
+        } else {
+          res.status(400).send('No presentation found with given userID');
+        }
+      })
+    } else {
+      res.send(400).send('UserID not provided');
+    }
+  },
+
   postPresentation: (req, res, next) => {
     var userID = req.body.userID;
     if (userID) {
@@ -235,6 +291,27 @@ module.exports = {
       })
     } else {
       res.status(400).send('user ID not provided');
+    }
+  },
+
+  updateQuestion: (req, res, next) => {
+    var qid = req.params.qid;
+    if (qid) {
+      db.question.put(qid).then(result => {
+        db.get(qid).then(result2 => {
+          if (result2.rows.length > 0) {
+            res.send(result2.rows[0]);
+          } else {
+            res.status(400).send('No question found for given ID');
+          }
+        }).catch(err => {
+          res.status(500).send(err + 'error getting question');
+        })
+      }).catch(err => {
+        res.status(500).send(err + 'error updating question');
+      })
+    } else {
+      res.status(400).send('question ID not provided');
     }
   },
 
