@@ -79,7 +79,7 @@ module.exports = {
       }
       answerString = answerString.slice(0, answerString.length - 2);
       db.answer.postMultiple(answerString).then(result => {
-        res.end();
+        res.send(result.rows);
       }).catch(err => {
         res.status(500).send(err + answerString);
       })
@@ -247,6 +247,7 @@ module.exports = {
   deleteQuestion: (req, res, next) => {
     var qid = req.params.qid;
     if (qid) {
+      var qstring = '(' + qid + ')';
       // check if there are answers for question
       db.answer.getAnswerByQuestion(qid).then(aRes => {
         // if there are answers, delete answers first
@@ -258,26 +259,26 @@ module.exports = {
           }
           delString = delString.slice(0, delString.length - 2) + ')';
         }
-          db.answer.delete(delString).then(adelRes => {
-            db.question.delete(qid).then(result => {
-              db.question.get(qid).then(result2 => {
-                if (result2.rows.length > 0) {
-                  console.log('question failed to delete');
-                } else {
-                  console.log('Question Deleted');
-                }
-                  res.end();
-              }).catch(err => {
-                res.status(500).send(err);
-              })
+        db.answer.delete(delString).then(adelRes => {
+          db.question.delete(qstring).then(result => {
+            db.question.get(qid).then(result2 => {
+              if (result2.rows.length > 0) {
+                console.log('question failed to delete');
+              } else {
+                console.log('Question Deleted');
+              }
+                res.end();
             }).catch(err => {
-              res.status(500).send(err);
+              res.status(500).send(err + '111111111111');
             })
           }).catch(err => {
-            res.status(500).send(err);
+            res.status(500).send(err + '22222222222');
           })
+        }).catch(err => {
+          res.status(500).send(err + '33333333333333');
+        })
       }).catch(err => {
-        res.status(500).send(err);
+        res.status(500).send(err + '444444444444444');
       })
     } else {
       res.status(400).send('question ID not provided');
@@ -335,30 +336,155 @@ module.exports = {
 
   postPresentation: (req, res, next) => {
     var userID = req.body.userID;
+    // var title = req.body.title;
     if (userID) {
-      db.presentation.post(userID).then(result => {
-        var pid = result.rows[0].presentationID;
-        if (pid) {
-          db.presentation.get(pid).then(result2 => {
-            if (result2.rows.length > 0) {
-              res.send(result2.rows[0]);
+      db.presentation.getLastID(userID).then(result => {
+        if (result.rows.length > 0) {
+          var presentation = result.rows[0];
+          var pid = presentation.presentationID;
+          db.question.getQuestionsByPresentation(pid).then(qs => {
+            if (qs.rows.length > 0) {
+              // post new presentation
+              db.presentation.post(userID).then(result2 => {
+              var pid = result2.rows[0].presentationID;
+              if (pid) {
+                db.presentation.get(pid).then(result3 => {
+                  if (result3.rows.length > 0) {
+                    res.send(result3.rows[0]);
+                  } else {
+                    res.send('No presentations with given ID')
+                  }
+                }).catch(err => {
+                  res.status(500).send(err);
+                })
+              } else {
+                res.send('no presentationID returned')
+              }
+
+              }).catch(err => {
+                res.status(500).send(err + '#########');
+              })
+
             } else {
-              res.send('No presentations with given ID')
+              // do not post new, just send back ID of last presentation
+              res.send(presentation);
             }
           }).catch(err => {
             res.status(500).send(err);
           })
+
         } else {
-          res.send('no presentationID returned')
+          db.presentation.post(userID).then(result2 => {
+            var pid = result2.rows[0].presentationID;
+            if (pid) {
+              db.presentation.get(pid).then(result3 => {
+                if (result3.rows.length > 0) {
+                  res.send(result3.rows[0]);
+                } else {
+                  res.send('No presentations with given ID')
+                }
+              }).catch(err => {
+                res.status(500).send(err);
+              })
+            } else {
+              res.send('no presentationID returned')
+            }
+
+            }).catch(err => {
+              res.status(500).send(err + '#########');
+            })
+
         }
       }).catch(err => {
         res.status(500).send(err);
       })
+
     } else {
       res.status(400).send('user ID not provided');
     }
   },
 
+  /*
+  updatePresentation: (req, res, next) => {
+    var pid = req.params.pid;
+    var title = req.body.title;
+    if (pid) {
+      db.presentation.update(title).then(result => {
+        db.presentation.get(pid).then(result2 => {
+          res.send(result2.rows[0]);
+        }).catch(err => {
+          res.status(500).send(err);
+        })
+      }).catch(err => {
+        res.staus(500).send(err);
+      })
+    }
+  },
+  deletePresentation: (req, res, next) => {
+    var pid = req.params.pid;
+    // CHECK PRESENTATION EXISTS
+    db.presentation.get(pid).then(result => {
+      // DELETE QUESTIONS FIRST
+      if (result.rows.length > 0) {
+        // GET QUESTIONS BY PRESENTATION
+        db.question.getQuestionsByPresentation(pid).then(questions => {
+          if (questions.rows.length > 0) {
+            // CREATE STRING OF QIDS TO DELETE
+            var qids = '(';
+            var aids = '(';
+            for (var i = 0; i < questions.rows.length; i++) {
+              var qid = questions.rows[i].questionID;
+              qids += qid + ', ';
+              // get answers for question
+              db.answer.getAnswerByQuestion(qid).then(ans => {
+                if (ans.rows.length > 0) {
+                  for (var i = 0; i < ans.rows.length; i++) {
+                    aids += ans.rows[i].answerID + ', ';
+                    console.log(aids);
+                  }
+                }
+              }).catch(err => {
+                res.status(500).send(err + '1231231231');
+              })
+
+            }
+            console.log(qids);
+            qids = qids.slice(0, questions.rows.length - 3) + ')';
+            console.log(qids);
+            if (aids.length > 1) {
+              aids = aids.slice(0, questions.rows.length - 2) + ')';
+            }
+          } else {
+            var qids = '(NULL)';
+          }
+          db.answer.delete(aids).then(ans => {
+            console.log('answers deleted');
+            db.question.delete(qids).then(result => {
+              console.log('questions deleted');
+              res.end();
+            }).catch(err => {
+              res.status(500).send(err + '!!!!!!!!!!!!!!!!!')
+            })
+          }).catch(err => {
+            res.status(500).send(err + '@@@@@@@@@@@@@@@');
+          })
+          // CONTINUE ON TO CHECK IF ANSWERS HAVE QUESTIONS
+        //   deleteQuestion({params: {qid: questions.rows[0].questionID}}, res, next);
+        // }).catch(err => {
+        //   res.status(400).send('No questions for given presentationID');
+        // })
+        }).catch(err => {
+          res.status(500).send(err + 'asdfasdfasdfasdf')
+        })
+      } else {
+        res.status(400).send('No presentation for given ID');
+      }
+    }).catch(err => {
+      res.status(500).send(err+ 'oiupoiupoiuo');
+    })
+
+  },
+*/
   getSession: (req, res, next) => {
     var socket = req.params.socket;
     if (socket) {
@@ -502,7 +628,7 @@ module.exports = {
       }
       responseString = responseString.slice(0, responseString.length - 2);
       db.response.postMultiple(responseString).then(result => {
-        res.end();
+        res.send(result.rows);
       }).catch(err => {
         res.status(500).send(err);
       })
