@@ -19,7 +19,7 @@ app.get('/allU', helpers.getAllUsers);
 app.post('/login', helpers.login); // good
 
 // ANSWERS
-app.get('/allA', helpers.getAllAnswers); // good
+app.get('/aAll', helpers.getAllAnswers); // good
 app.get('/aByQ/:id', helpers.getAnswers); // good
 app.get('/aByCorrect/:qid', helpers.getCorrectAnswer);// good
 app.post('/aByQ', helpers.postAnswer); // good+
