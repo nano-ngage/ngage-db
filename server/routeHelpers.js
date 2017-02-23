@@ -315,8 +315,8 @@ module.exports = {
     }
   },
 
-  postPresentationHelper: (userID) => {
-    db.presentation.post(userID).then(result2 => {
+  postPresentationHelper: (res, userID, title) => {
+    db.presentation.post(userID, title).then(result2 => {
       var pid = result2.rows[0].presentationID;
       if (pid) {
         db.presentation.get(pid).then(result3 => {
@@ -339,7 +339,7 @@ module.exports = {
 
   postPresentation: (req, res, next) => {
     var userID = req.body.userID;
-    // var title = req.body.title;
+    var title = req.body.title;
     if (userID) {
       db.presentation.getLastID(userID).then(result => {
         if (result.rows.length > 0) {
@@ -348,7 +348,7 @@ module.exports = {
           db.question.getQuestionsByPresentation(pid).then(qs => {
             if (qs.rows.length > 0) {
               // post new presentation
-              module.exports.postPresentationHelper(userID);
+              module.exports.postPresentationHelper(res, userID, title);
             } else {
               // do not post new, just send back ID of last presentation
               res.send(presentation);
@@ -358,7 +358,7 @@ module.exports = {
           })
 
         } else {
-          module.exports.postPresentationHelper(userID);
+          module.exports.postPresentationHelper(res, userID, title);
         }
       }).catch(err => {
         res.status(500).send(err);
