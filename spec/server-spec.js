@@ -20,6 +20,43 @@ var waitForThen = function (test, cb) {
 };
 
 describe('Node Server Request Listener Function', function() {
+
+  // before(function(done) {
+  //     cli.connect(err => {
+  //      cli.query('DELETE FROM "response" where "responseID" >= 0')
+  //     .then(cli.query('DELETE FROM "session" where "sessionID" >= 0'))
+  //     .then(cli.query('DELETE FROM "answer" where "answerID" >= 0'))
+  //     .then(cli.query('DELETE FROM "question" where "questionID" >= 0'))
+  //     .then(cli.query('DELETE FROM "presentation" where "presentationID" >= 0'))
+  //     .then(cli.query('DELETE FROM "user" where "userID" >= 0'))
+  //     .then(() => {done ()})
+  //     })
+  //   });
+
+  //   after(function() {
+  //     cli.end();
+  //   });
+
+  it('Should accept POSTS to /aByQ', function() {
+    var stubAnswer = {
+      questionID: -1,
+      answer: 'C',
+      correct: 0
+    };
+    var req = new stubs.request('/aByQ', 'POST', stubAnswer);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    // Expect 201 Created response status
+    expect(res._responseCode).to.equal(201);
+
+    // Testing for a newline isn't a valid test
+    // TODO: Replace with with a valid test
+    // expect(res._data).to.equal(JSON.stringify('\n'));
+    expect(res._ended).to.equal(true);
+  });
+
   it('Should answer GET requests for /aByQ/:id with a 200 status code', function() {
     // This is a fake server request. Normally, the server would provide this,
     // but we want to test our function's behavior totally independent of the server code
@@ -66,25 +103,6 @@ describe('Node Server Request Listener Function', function() {
     expect(res._ended).to.equal(true);
   });
 
-  it('Should accept POSTS to /aByQ', function() {
-    var stubAnswer = {
-      questionID: -1,
-      answer: 'C',
-      correct: 0
-    };
-    var req = new stubs.request('/aByQ', 'POST', stubAnswer);
-    var res = new stubs.response();
-
-    handler.requestHandler(req, res);
-
-    // Expect 201 Created response status
-    expect(res._responseCode).to.equal(201);
-
-    // Testing for a newline isn't a valid test
-    // TODO: Replace with with a valid test
-    // expect(res._data).to.equal(JSON.stringify('\n'));
-    expect(res._ended).to.equal(true);
-  });
 
   it('Should respond with messages that were previously posted', function() {
     var stubAnswer = {
