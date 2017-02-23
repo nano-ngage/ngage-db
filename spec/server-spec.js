@@ -1,149 +1,298 @@
-// Server spec
-// var handler = require('../request-handler');
 var expect = require('chai').expect;
-var stubs = require('./Stubs');
-var sinon = require('sinon');
+var request = require('request');
+var app = require('../server/routes.js');
 
-var headers = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept',
-  'access-control-max-age': 10, // Seconds.
-  'Content-Type': 'application/json'
-};
+describe('', function() {
 
-
-var waitForThen = function (test, cb) {
-  setTimeout(function() {
-    test() ? cb.apply(this) : waitForThen(test, cb);
-  }, 5);
-};
-
-describe('Node Server Request Listener Function', function() {
-
-  // before(function(done) {
-  //     cli.connect(err => {
-  //      cli.query('DELETE FROM "response" where "responseID" >= 0')
-  //     .then(cli.query('DELETE FROM "session" where "sessionID" >= 0'))
-  //     .then(cli.query('DELETE FROM "answer" where "answerID" >= 0'))
-  //     .then(cli.query('DELETE FROM "question" where "questionID" >= 0'))
-  //     .then(cli.query('DELETE FROM "presentation" where "presentationID" >= 0'))
-  //     .then(cli.query('DELETE FROM "user" where "userID" >= 0'))
-  //     .then(() => {done ()})
-  //     })
-  //   });
-
-  //   after(function() {
-  //     cli.end();
-  //   });
-
-  it('Should accept POSTS to /aByQ', function() {
-    var stubAnswer = {
-      questionID: -1,
-      answer: 'C',
-      correct: 0
-    };
-    var req = new stubs.request('/aByQ', 'POST', stubAnswer);
-    var res = new stubs.response();
-
-    handler.requestHandler(req, res);
-
-    // Expect 201 Created response status
-    expect(res._responseCode).to.equal(201);
-
-    // Testing for a newline isn't a valid test
-    // TODO: Replace with with a valid test
-    // expect(res._data).to.equal(JSON.stringify('\n'));
-    expect(res._ended).to.equal(true);
+  var server;
+  var presentationID, questionID, answerID;
+  before(function() {
+    server = app.listen(4568, function() {
+      console.log('Shortly is listening on 4568');
+    });
   });
 
-  it('Should answer GET requests for /aByQ/:id with a 200 status code', function() {
-    // This is a fake server request. Normally, the server would provide this,
-    // but we want to test our function's behavior totally independent of the server code
-    var qID = -1;
-    var req = new stubs.request('/aByQ/:id', 'GET', qID);
-    var res = new stubs.response();
-
-    handler.requestHandler(req, res);
-
-    expect(res._responseCode).to.equal(200);
-    expect(res._ended).to.equal(true);
+  after(function() {
+    server.close();
   });
 
-  it('Should send back parsable stringified JSON', function() {
-    var req = new stubs.request('/aByQ/:id', 'GET', qID);
-    var res = new stubs.response();
-
-    handler.requestHandler(req, res);
-
-    expect(JSON.parse.bind(this, res._data)).to.not.throw();
-    expect(res._ended).to.equal(true);
-  });
-
-  it('Should send back an object', function() {
-    var req = new stubs.request('/aByQ/:id', 'GET', qID);
-    var res = new stubs.response();
-
-    handler.requestHandler(req, res);
-
-    var parsedBody = JSON.parse(res._data);
-    expect(parsedBody).to.be.an('object');
-    expect(res._ended).to.equal(true);
-  });
-
-  it('Should send an object containing certain properties', function() {
-    var req = new stubs.request('/classes/messages', 'GET', qID);
-    var res = new stubs.response();
-
-    handler.requestHandler(req, res);
-
-    var parsedBody = JSON.parse(res._data);
-    expect(parsedBody).to.have.property('email');
-    expect(parsedBody).to.have.property('firstName');
-    expect(res._ended).to.equal(true);
-  });
-
-
-  it('Should respond with messages that were previously posted', function() {
-    var stubAnswer = {
-      questionID: -1,
-      answer: 'B',
-      correct: 1
-    };
-    var req = new stubs.request('/aByQ/', 'POST', stubMsg);
-    var res = new stubs.response();
-
-    handler.requestHandler(req, res);
-
-    expect(res._responseCode).to.equal(201);
-
-      // Now if we request the log for that room the message we posted should be there:
-    req = new stubs.request('/aByQ/:id', 'GET');
-    res = new stubs.response();
-
-    handler.requestHandler(req, res);
-
-    expect(res._responseCode).to.equal(200);
-    var messages = JSON.parse(res._data).results;
-    expect(messages.length).to.be.above(0);
-    expect(messages[0].username).to.equal('Jono');
-    expect(messages[0].message).to.equal('Do my bidding!');
-    expect(res._ended).to.equal(true);
-  });
-
-
-  it('Should 404 when asked for a nonexistent file', function() {
-    var req = new stubs.request('/arglebargle', 'GET');
-    var res = new stubs.response();
-
-    handler.requestHandler(req, res);
-
-    // Wait for response to return and then check status code
-    waitForThen(
-      function() { return res._ended; },
-      function() {
-        expect(res._responseCode).to.equal(404);
+  describe('Presentation:', function() {
+    var requestWithSession = request.defaults({jar: true});
+    it('Posts a presentation to the database and returns the presentation ID', function(done) {
+      var options = {
+        'method': 'POST',
+        'uri': 'http://127.0.0.1:4568/postPByU',
+        'json': {
+          'userID': 1,
+          'title': 'This is a test title'
+        }
+      };
+      requestWithSession(options, function(error, res, body) {
+        expect(body).to.be.a('object');
+        expect(body.presentationID).to.exist;
+        expect(body.presentationID).to.be.a('number');
+        presentationID = body.presentationID.toString().trim()
+        done();
       });
+    });
+    it('Updates a presentation on the database and returns the new presentation', function(done) {
+      var options = {
+        'method': 'PUT',
+        'uri': `http://127.0.0.1:4568/updateP/${presentationID}`,
+        'json': {
+          'title': 'This is an updated test title'
+        }
+      };
+      requestWithSession(options, function(error, res, body) {
+        expect(body).to.be.a('object');
+        expect(body.title).to.exist;
+        expect(body.title).to.be.equal('This is an updated test title');
+        done();
+      });
+    });
   });
 
-});
+  describe('Question:', function() {
+    var requestWithSession = request.defaults({jar: true});
+    it('Posts a question to the database and returns the question ID', function(done) {
+      var options = {
+        'method': 'POST',
+        'uri': 'http://127.0.0.1:4568/qByP',
+        'json': {
+          'presentationID': presentationID,
+          'type': 1,
+          'question': 'Who are you?'
+        }
+      };
+      requestWithSession(options, function(error, res, body) {
+        expect(body).to.be.a('object');
+        expect(body.questionID).to.exist;
+        expect(body.questionID).to.be.a('number');
+        questionID = body.questionID;
+        done();
+      });
+    });
+    it('Updates a question on the database and returns the new question', function(done) {
+      var options = {
+        'method': 'PUT',
+        'uri': `http://127.0.0.1:4568/updateQ/${questionID}`,
+        'json': {
+          'question': 'Why are you?',
+          'type': 1
+        }
+      };
+      requestWithSession(options, function(error, res, body) {
+        expect(body).to.be.a('object');
+        expect(body.question).to.exist;
+        expect(body.question).to.be.equal('Why are you?');
+        done();
+      });
+    });
+  });
+
+
+
+
+  describe('Answer:', function() {
+    var requestWithSession = request.defaults({jar: true});
+    it('Posts a answer to the database and returns the answer ID', function(done) {
+      var options = {
+        'method': 'POST',
+        'uri': 'http://127.0.0.1:4568/aByQ',
+        'json': {
+          'questionID': questionID,
+          'answer': 'Just because',
+          'correct': 'false'
+        }
+      };
+      requestWithSession(options, function(error, res, body) {
+        if (error) {
+          console.log(error);
+        } 
+        console.log(res);
+        expect(body).to.be.a('object');
+        expect(body.answerID).to.exist;
+        expect(body.answerID).to.be.a('number');
+        answerID = body.answerID;
+        done();
+      });
+    });
+    it('Updates a answer on the database and returns the new answer', function(done) {
+      var options = {
+        'method': 'PUT',
+        'uri': `http://127.0.0.1:4568/updateA/${answerID}`,
+        'json': {
+          'answer': 'Just because again',
+          'correct': 'false'
+        }
+      };
+      requestWithSession(options, function(error, res, body) {
+        expect(body).to.be.a('object');
+        expect(body.answer).to.exist;
+        expect(body.answer).to.be.equal('Just because again');
+        done();
+      });
+    });
+  });
+})
+
+
+
+
+
+
+
+
+
+
+
+
+// // Server spec
+// // var handler = require('../request-handler');
+// var expect = require('chai').expect;
+// var stubs = require('./Stubs');
+// var sinon = require('sinon');
+
+// var headers = {
+//   'access-control-allow-origin': '*',
+//   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+//   'access-control-allow-headers': 'content-type, accept',
+//   'access-control-max-age': 10, // Seconds.
+//   'Content-Type': 'application/json'
+// };
+
+
+// var waitForThen = function (test, cb) {
+//   setTimeout(function() {
+//     test() ? cb.apply(this) : waitForThen(test, cb);
+//   }, 5);
+// };
+
+// describe('Node Server Request Listener Function', function() {
+
+//   // before(function(done) {
+//   //     cli.connect(err => {
+//   //      cli.query('DELETE FROM "response" where "responseID" >= 0')
+//   //     .then(cli.query('DELETE FROM "session" where "sessionID" >= 0'))
+//   //     .then(cli.query('DELETE FROM "answer" where "answerID" >= 0'))
+//   //     .then(cli.query('DELETE FROM "question" where "questionID" >= 0'))
+//   //     .then(cli.query('DELETE FROM "presentation" where "presentationID" >= 0'))
+//   //     .then(cli.query('DELETE FROM "user" where "userID" >= 0'))
+//   //     .then(() => {done ()})
+//   //     })
+//   //   });
+
+//   //   after(function() {
+//   //     cli.end();
+//   //   });
+
+//   it('Should accept POSTS to /aByQ', function() {
+//     var stubAnswer = {
+//       questionID: -1,
+//       answer: 'C',
+//       correct: 0
+//     };
+//     var req = new stubs.request('/aByQ', 'POST', stubAnswer);
+//     var res = new stubs.response();
+
+//     handler.requestHandler(req, res);
+
+//     // Expect 201 Created response status
+//     expect(res._responseCode).to.equal(201);
+
+//     // Testing for a newline isn't a valid test
+//     // TODO: Replace with with a valid test
+//     // expect(res._data).to.equal(JSON.stringify('\n'));
+//     expect(res._ended).to.equal(true);
+//   });
+
+//   it('Should answer GET requests for /aByQ/:id with a 200 status code', function() {
+//     // This is a fake server request. Normally, the server would provide this,
+//     // but we want to test our function's behavior totally independent of the server code
+//     var qID = -1;
+//     var req = new stubs.request('/aByQ/:id', 'GET', qID);
+//     var res = new stubs.response();
+
+//     handler.requestHandler(req, res);
+
+//     expect(res._responseCode).to.equal(200);
+//     expect(res._ended).to.equal(true);
+//   });
+
+//   it('Should send back parsable stringified JSON', function() {
+//     var req = new stubs.request('/aByQ/:id', 'GET', qID);
+//     var res = new stubs.response();
+
+//     handler.requestHandler(req, res);
+
+//     expect(JSON.parse.bind(this, res._data)).to.not.throw();
+//     expect(res._ended).to.equal(true);
+//   });
+
+//   it('Should send back an object', function() {
+//     var req = new stubs.request('/aByQ/:id', 'GET', qID);
+//     var res = new stubs.response();
+
+//     handler.requestHandler(req, res);
+
+//     var parsedBody = JSON.parse(res._data);
+//     expect(parsedBody).to.be.an('object');
+//     expect(res._ended).to.equal(true);
+//   });
+
+//   it('Should send an object containing certain properties', function() {
+//     var req = new stubs.request('/classes/messages', 'GET', qID);
+//     var res = new stubs.response();
+
+//     handler.requestHandler(req, res);
+
+//     var parsedBody = JSON.parse(res._data);
+//     expect(parsedBody).to.have.property('email');
+//     expect(parsedBody).to.have.property('firstName');
+//     expect(res._ended).to.equal(true);
+//   });
+
+
+//   it('Should respond with messages that were previously posted', function() {
+//     var stubAnswer = {
+//       questionID: -1,
+//       answer: 'B',
+//       correct: 1
+//     };
+//     var req = new stubs.request('/aByQ/', 'POST', stubMsg);
+//     var res = new stubs.response();
+
+//     handler.requestHandler(req, res);
+
+//     expect(res._responseCode).to.equal(201);
+
+//       // Now if we request the log for that room the message we posted should be there:
+//     req = new stubs.request('/aByQ/:id', 'GET');
+//     res = new stubs.response();
+
+//     handler.requestHandler(req, res);
+
+//     expect(res._responseCode).to.equal(200);
+//     var messages = JSON.parse(res._data).results;
+//     expect(messages.length).to.be.above(0);
+//     expect(messages[0].username).to.equal('Jono');
+//     expect(messages[0].message).to.equal('Do my bidding!');
+//     expect(res._ended).to.equal(true);
+//   });
+
+
+//   it('Should 404 when asked for a nonexistent file', function() {
+//     var req = new stubs.request('/arglebargle', 'GET');
+//     var res = new stubs.response();
+
+//     handler.requestHandler(req, res);
+
+//     // Wait for response to return and then check status code
+//     waitForThen(
+//       function() { return res._ended; },
+//       function() {
+//         expect(res._responseCode).to.equal(404);
+//       });
+//   });
+
+// });
