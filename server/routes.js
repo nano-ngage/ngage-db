@@ -40,7 +40,8 @@ app.get('/pBySocket/:socket', helpers.getPresentationByS); //good
 app.get('/pByU/:id', helpers.getPresentationByU); // good
 app.get('/pByULatest/:id/', helpers.getLatestPresentationByUser); // good
 app.post('/postPByU', helpers.postPresentation); // good+
-app.put('/updateP/:pid', helpers.updatePresentation);
+// app.put('/updateP/:pid', helpers.updatePresentation);
+// app.delete('/deleteP/:pid', helpers.deletePresentation);
 
 // SESSION
 app.get('/sByS/:socket', helpers.getSession); // good
