@@ -247,42 +247,23 @@ module.exports = {
   deleteQuestion: (req, res, next) => {
     var qid = req.params.qid;
     if (qid) {
-      var qstring = '(' + qid + ')';
-      // check if there are answers for question
-      db.answer.getAnswerByQuestion(qid).then(aRes => {
-        // if there are answers, delete answers first
-        var delString = '(NULL)';
-        if (aRes.rows.length > 0) {
-          delString = '(';
-          for (var i = 0; i < aRes.rows.length; i++) {
-            delString += aRes.rows[i].answerID + ', '
-          }
-          delString = delString.slice(0, delString.length - 2) + ')';
-        }
-        db.answer.delete(delString).then(adelRes => {
-          db.question.delete(qstring).then(result => {
-            db.question.get(qid).then(result2 => {
-              if (result2.rows.length > 0) {
-                console.log('question failed to delete');
-              } else {
-                console.log('Question Deleted');
-              }
-                res.end();
-            }).catch(err => {
-              res.status(500).send(err + '111111111111');
-            })
+      db.question.get(qid).then(result => {
+        if (result.rows.length > 0) {
+          db.question.delete(qid).then(result2 => {
+            res.send('question ' + qid + ' deleted');
           }).catch(err => {
-            res.status(500).send(err + '22222222222');
+            res.status(500).send(err);
           })
-        }).catch(err => {
-          res.status(500).send(err + '33333333333333');
-        })
+        } else {
+          res.status(400).send('No question found with given ID');
+        }
       }).catch(err => {
-        res.status(500).send(err + '444444444444444');
+        res.status(500).send(err);
       })
     } else {
-      res.status(400).send('question ID not provided');
+      res.status(400).send('question ID not provided')
     }
+
   },
 
   getPresentationByS: (req, res, next) => {
@@ -334,6 +315,28 @@ module.exports = {
     }
   },
 
+  postPresentationHelper: (userID) => {
+    db.presentation.post(userID).then(result2 => {
+      var pid = result2.rows[0].presentationID;
+      if (pid) {
+        db.presentation.get(pid).then(result3 => {
+          if (result3.rows.length > 0) {
+            res.send(result3.rows[0]);
+          } else {
+            res.send('No presentations with given ID')
+          }
+        }).catch(err => {
+          res.status(500).send(err);
+        })
+      } else {
+        res.send('no presentationID returned')
+      }
+
+    }).catch(err => {
+      res.status(500).send(err + '#########');
+    })
+  },
+
   postPresentation: (req, res, next) => {
     var userID = req.body.userID;
     // var title = req.body.title;
@@ -345,26 +348,7 @@ module.exports = {
           db.question.getQuestionsByPresentation(pid).then(qs => {
             if (qs.rows.length > 0) {
               // post new presentation
-              db.presentation.post(userID).then(result2 => {
-              var pid = result2.rows[0].presentationID;
-              if (pid) {
-                db.presentation.get(pid).then(result3 => {
-                  if (result3.rows.length > 0) {
-                    res.send(result3.rows[0]);
-                  } else {
-                    res.send('No presentations with given ID')
-                  }
-                }).catch(err => {
-                  res.status(500).send(err);
-                })
-              } else {
-                res.send('no presentationID returned')
-              }
-
-              }).catch(err => {
-                res.status(500).send(err + '#########');
-              })
-
+              module.exports.postPresentationHelper(userID);
             } else {
               // do not post new, just send back ID of last presentation
               res.send(presentation);
@@ -374,26 +358,7 @@ module.exports = {
           })
 
         } else {
-          db.presentation.post(userID).then(result2 => {
-            var pid = result2.rows[0].presentationID;
-            if (pid) {
-              db.presentation.get(pid).then(result3 => {
-                if (result3.rows.length > 0) {
-                  res.send(result3.rows[0]);
-                } else {
-                  res.send('No presentations with given ID')
-                }
-              }).catch(err => {
-                res.status(500).send(err);
-              })
-            } else {
-              res.send('no presentationID returned')
-            }
-
-            }).catch(err => {
-              res.status(500).send(err + '#########');
-            })
-
+          module.exports.postPresentationHelper(userID);
         }
       }).catch(err => {
         res.status(500).send(err);
@@ -404,7 +369,6 @@ module.exports = {
     }
   },
 
-  /*
   updatePresentation: (req, res, next) => {
     var pid = req.params.pid;
     var title = req.body.title;
@@ -420,71 +384,20 @@ module.exports = {
       })
     }
   },
+
   deletePresentation: (req, res, next) => {
     var pid = req.params.pid;
-    // CHECK PRESENTATION EXISTS
     db.presentation.get(pid).then(result => {
-      // DELETE QUESTIONS FIRST
-      if (result.rows.length > 0) {
-        // GET QUESTIONS BY PRESENTATION
-        db.question.getQuestionsByPresentation(pid).then(questions => {
-          if (questions.rows.length > 0) {
-            // CREATE STRING OF QIDS TO DELETE
-            var qids = '(';
-            var aids = '(';
-            for (var i = 0; i < questions.rows.length; i++) {
-              var qid = questions.rows[i].questionID;
-              qids += qid + ', ';
-              // get answers for question
-              db.answer.getAnswerByQuestion(qid).then(ans => {
-                if (ans.rows.length > 0) {
-                  for (var i = 0; i < ans.rows.length; i++) {
-                    aids += ans.rows[i].answerID + ', ';
-                    console.log(aids);
-                  }
-                }
-              }).catch(err => {
-                res.status(500).send(err + '1231231231');
-              })
-
-            }
-            console.log(qids);
-            qids = qids.slice(0, questions.rows.length - 3) + ')';
-            console.log(qids);
-            if (aids.length > 1) {
-              aids = aids.slice(0, questions.rows.length - 2) + ')';
-            }
-          } else {
-            var qids = '(NULL)';
-          }
-          db.answer.delete(aids).then(ans => {
-            console.log('answers deleted');
-            db.question.delete(qids).then(result => {
-              console.log('questions deleted');
-              res.end();
-            }).catch(err => {
-              res.status(500).send(err + '!!!!!!!!!!!!!!!!!')
-            })
-          }).catch(err => {
-            res.status(500).send(err + '@@@@@@@@@@@@@@@');
-          })
-          // CONTINUE ON TO CHECK IF ANSWERS HAVE QUESTIONS
-        //   deleteQuestion({params: {qid: questions.rows[0].questionID}}, res, next);
-        // }).catch(err => {
-        //   res.status(400).send('No questions for given presentationID');
-        // })
+        db.presentation.delete(pid).then(result => {
+          res.send('Presentation ' + pid + ' deleted');
         }).catch(err => {
-          res.status(500).send(err + 'asdfasdfasdfasdf')
+          res.status(500).send(err);
         })
-      } else {
-        res.status(400).send('No presentation for given ID');
-      }
     }).catch(err => {
-      res.status(500).send(err+ 'oiupoiupoiuo');
+      res.status(500).send(err);
     })
-
   },
-*/
+
   getSession: (req, res, next) => {
     var socket = req.params.socket;
     if (socket) {
