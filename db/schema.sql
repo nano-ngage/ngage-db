@@ -150,8 +150,8 @@ ALTER TABLE "response" ADD FOREIGN KEY ("answerID") REFERENCES "answer" ("answer
 
 INSERT INTO "user" ("userID","type","firstName","lastName","email","password","authID") VALUES
 (-1,0,'undefined','undefined','undefined','undefined','undefined');
-INSERT INTO "presentation" ("presentationID","userID") VALUES
-(-1,-1);
+INSERT INTO "presentation" ("presentationID", "title", "userID") VALUES
+(-1, 'undefined', -1);
 INSERT INTO "question" ("questionID","presentationID","type","question") VALUES
 (-1,-1,0,'undefined');
 INSERT INTO "answer" ("answerID","questionID","answer","correct") VALUES
