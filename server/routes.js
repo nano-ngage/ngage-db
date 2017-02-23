@@ -24,24 +24,24 @@ app.get('/aByQ/:id', helpers.getAnswers); // good
 app.get('/aByCorrect/:qid', helpers.getCorrectAnswer);// good
 app.post('/aByQ', helpers.postAnswer); // good+
 app.post('/aByQs', helpers.postAnswers); // good
-app.put('/updateA/:aid', helpers.updateAnswer); // good
-app.delete('/deleteA/:aid', helpers.deleteAnswer); // good
+app.put('/a/:aid', helpers.updateAnswer); // good
+app.delete('/a/:aid', helpers.deleteAnswer); // good
 
 // QUESTIONS
-app.get('/allQ', helpers.getAllQuestions); // good
-app.get('/qBySocket/:socket', helpers.getQuestions); // good
+app.get('/qAll', helpers.getAllQuestions); // good
+app.get('/qByS/:socket', helpers.getQuestions); // good
 app.get('/qByP/:pid', helpers.getQuestionsByP) // good
 app.post('/qByP', helpers.postQuestion); // good+
-app.put('/updateQ/:qid', helpers.updateQuestion); // good+
-app.delete('/deleteQ/:qid', helpers.deleteQuestion); // good+
+app.put('/q/:qid', helpers.updateQuestion); // good+
+app.delete('/q/:qid', helpers.deleteQuestion); // good+
 
 // PRESENTATION
-app.get('/pBySocket/:socket', helpers.getPresentationByS); //good
+app.get('/pByS/:socket', helpers.getPresentationByS); //good
 app.get('/pByU/:id', helpers.getPresentationByU); // good
 app.get('/pByULatest/:id/', helpers.getLatestPresentationByUser); // good
-app.post('/postPByU', helpers.postPresentation); // good+
-app.put('/updateP/:pid', helpers.updatePresentation); // good
-app.delete('/deleteP/:pid', helpers.deletePresentation); // good
+app.post('/pByU', helpers.postPresentation); // good+
+app.put('/p/:pid', helpers.updatePresentation); // good
+app.delete('/p/:pid', helpers.deletePresentation); // good
 
 // SESSION
 app.get('/sByS/:socket', helpers.getSession); // good
@@ -52,7 +52,7 @@ app.post('/sByPS', helpers.postSession); // good+
 app.get('/rByQ/:qid', helpers.getResponseByQuestion); //good
 app.get('/rByS/:sessionID', helpers.getResponseBySession); //good
 app.get('/rByQS/:qid/:sessionID', helpers.getResponseByQandS);// good
-app.post('/rPost', helpers.postResponse); //good+
-app.post('/rPostMultiple', helpers.postMultiResponses); //good
+app.post('/r', helpers.postResponse); //good+
+app.post('/rMultiple', helpers.postMultiResponses); //good
 
 module.exports = app;
