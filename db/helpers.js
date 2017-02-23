@@ -17,9 +17,9 @@ module.exports = {
     getLastID: (userID) => db.query('SELECT "presentationID" FROM "presentation" WHERE "userID" = $1 ORDER BY "updatedAt" DESC LIMIT 1', [userID]),
     getPresBySocket: (socket) => db.query('SELECT "presentationID" FROM "session" WHERE "socket" = $1', [socket]),
     getPresByUser: (userID) => db.query('SELECT * FROM "presentation" WHERE "userID" = $1', [userID]),
-    post: (userID) => db.query('INSERT INTO "presentation" ("userID") VALUES ($1) RETURNING "presentationID"', [userID]),
-    // post: (userID, title) => db.query('INSERT INTO "presentation" ("userID", "title") VALUES ($1, $2) RETURNING "presentationID"', [userID, title]),
-    // update: (title) => db.query('UPDATE "presentation" SET "title" = $1', [title]),
+    post: (userID, title) => db.query('INSERT INTO "presentation" ("userID", "title") VALUES ($1, $2) RETURNING "presentationID"', [userID, title]),
+    update: (title) => db.query('UPDATE "presentation" SET "title" = $1', [title]),
+    delete: (pid) => db.query('DELETE FROM "presentation" WHERE "presentationID" = $1', [pid]),
   },
   question: {
     truncate: () => db.query('DELETE FROM "question" where "questionID" >= 0'),
@@ -31,7 +31,7 @@ module.exports = {
       db.query('SELECT * FROM "question" WHERE "presentationID" = $1', [presentationID]),
     post: (presentationID, type, question) => db.query('INSERT INTO "question" ("presentationID", "type", "question") VALUES ($1, $2, $3) RETURNING "questionID"', [presentationID, type, question]),
     put: (type, question, qid) => db.query('UPDATE "question" SET "type" = $1, "question" = $2 WHERE "questionID" = $3', [type, question, qid]),
-    delete: (qid) => db.query('DELETE FROM "question" WHERE "questionID" IN ' + qid),
+    delete: (qid) => db.query('DELETE FROM "question" WHERE "questionID" = $1', [qid]),
   },
   answer: {
     truncate: () => db.query('DELETE FROM "answer" where "answerID" >= 0'),
