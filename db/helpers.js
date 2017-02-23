@@ -18,7 +18,7 @@ module.exports = {
     getPresBySocket: (socket) => db.query('SELECT "presentationID" FROM "session" WHERE "socket" = $1', [socket]),
     getPresByUser: (userID) => db.query('SELECT * FROM "presentation" WHERE "userID" = $1', [userID]),
     post: (userID, title) => db.query('INSERT INTO "presentation" ("userID", "title") VALUES ($1, $2) RETURNING "presentationID"', [userID, title]),
-    update: (title) => db.query('UPDATE "presentation" SET "title" = $1', [title]),
+    update: (title, pid) => db.query('UPDATE "presentation" SET "title" = $1 WHERE "presentationID" = $2', [title, pid]),
     delete: (pid) => db.query('DELETE FROM "presentation" WHERE "presentationID" = $1', [pid]),
   },
   question: {
