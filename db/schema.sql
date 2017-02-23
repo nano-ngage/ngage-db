@@ -121,14 +121,14 @@ CREATE TABLE "response" (
 -- Foreign Keys
 -- ---
 
-ALTER TABLE "presentation" ADD FOREIGN KEY ("userID") REFERENCES "user" ("userID");
-ALTER TABLE "question" ADD FOREIGN KEY ("presentationID") REFERENCES "presentation" ("presentationID");
-ALTER TABLE "answer" ADD FOREIGN KEY ("questionID") REFERENCES "question" ("questionID");
-ALTER TABLE "session" ADD FOREIGN KEY ("presentationID") REFERENCES "presentation" ("presentationID");
-ALTER TABLE "response" ADD FOREIGN KEY ("sessionID") REFERENCES "session" ("sessionID");
-ALTER TABLE "response" ADD FOREIGN KEY ("userID") REFERENCES "user" ("userID");
-ALTER TABLE "response" ADD FOREIGN KEY ("questionID") REFERENCES "question" ("questionID");
-ALTER TABLE "response" ADD FOREIGN KEY ("answerID") REFERENCES "answer" ("answerID");
+ALTER TABLE "presentation" ADD FOREIGN KEY ("userID") REFERENCES "user" ("userID") ON DELETE CASCADE;
+ALTER TABLE "question" ADD FOREIGN KEY ("presentationID") REFERENCES "presentation" ("presentationID") ON DELETE CASCADE;
+ALTER TABLE "answer" ADD FOREIGN KEY ("questionID") REFERENCES "question" ("questionID") ON DELETE CASCADE;
+ALTER TABLE "session" ADD FOREIGN KEY ("presentationID") REFERENCES "presentation" ("presentationID") ON DELETE CASCADE;
+ALTER TABLE "response" ADD FOREIGN KEY ("sessionID") REFERENCES "session" ("sessionID") ON DELETE CASCADE;
+ALTER TABLE "response" ADD FOREIGN KEY ("userID") REFERENCES "user" ("userID") ON DELETE CASCADE;
+ALTER TABLE "response" ADD FOREIGN KEY ("questionID") REFERENCES "question" ("questionID") ON DELETE CASCADE;
+ALTER TABLE "response" ADD FOREIGN KEY ("answerID") REFERENCES "answer" ("answerID") ON DELETE CASCADE;
 
 
 -- ---
