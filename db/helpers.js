@@ -48,7 +48,7 @@ module.exports = {
     truncate: () => db.query('DELETE FROM "session" where "sessionID" >= 0'),
     get: (id) => db.query('SELECT * FROM "session" WHERE "sessionID" = $1', [id]),
     getAll: () => db.query('SELECT * FROM "session"'),
-    getSessionBySocket: (socket) => db.query('SELECT "session"."sessionID", "presentation"."userID" FROM "session" INNER JOIN "presentation" ON "presentation"."presentationID" = "session"."presentationID" WHERE "socket" = $1', [socket]),
+    getSessionBySocket: (socket) => db.query('SELECT "session"."sessionID", "presentation"."userID" FROM "session" INNER JOIN "presentation" ON "presentation"."presentationID" = "session"."presentationID" WHERE "socket" = $1 ORDER BY "session"."sessionID" DESC LIMIT 1', [socket]),
     post: (presentationID, socket) => db.query('INSERT INTO "session" ("presentationID", "socket") VALUES ($1, $2) RETURNING "sessionID"', [presentationID, socket])
   },
   response: {
