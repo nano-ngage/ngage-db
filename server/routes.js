@@ -20,6 +20,7 @@ app.post('/login', helpers.login); // good
 
 // ANSWERS
 app.get('/aAll', helpers.getAllAnswers); // good
+app.get('/a/:id', helpers.getAnswer); // good
 app.get('/aByQ/:id', helpers.getAnswers); // good
 app.get('/aByCorrect/:qid', helpers.getCorrectAnswer);// good
 app.post('/aByQ', helpers.postAnswer); // good+
@@ -29,6 +30,7 @@ app.delete('/a/:aid', helpers.deleteAnswer); // good
 
 // QUESTIONS
 app.get('/qAll', helpers.getAllQuestions); // good
+app.get('/q/:id', helpers.getQuestion) // good
 app.get('/qByS/:socket', helpers.getQuestions); // good
 app.get('/qByP/:pid', helpers.getQuestionsByP) // good
 app.post('/qByP', helpers.postQuestion); // good+
@@ -36,6 +38,7 @@ app.put('/q/:qid', helpers.updateQuestion); // good+
 app.delete('/q/:qid', helpers.deleteQuestion); // good+
 
 // PRESENTATION
+app.get('/p/:id', helpers.getPresentation); //good
 app.get('/pByS/:socket', helpers.getPresentationByS); //good
 app.get('/pByU/:id', helpers.getPresentationByU); // good
 app.get('/pByULatest/:id/', helpers.getLatestPresentationByUser); // good

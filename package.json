@@ -5,7 +5,7 @@
   "repository": "https://github.com/nano-ngage/ngage-db.git",
   "scripts": {
     "start": "nodemon server/index.js",
-    "test": "mocha spec/server-spec.js"
+    "test": "mocha spec/db-spec.js spec/server-spec.js"
   },
   "contributors": [
     "Sunnie Mao",
