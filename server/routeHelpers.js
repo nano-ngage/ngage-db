@@ -9,6 +9,22 @@ module.exports = {
     })
   },
 
+  getAnswer: (req, res, next) => {
+    if (req.params.id) {
+      db.answer.get(req.params.id).then(result => {
+        if (result.rows.length > 0) {
+          res.status(200).send(result.rows[0]);
+        } else {
+          res.status(500).send('invalid answer id provided');
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    } else {
+      res.status(400).send('answer ID not provided');
+    }
+  },
+
   getAnswers: (req, res, next) => {
     if (req.params.id) {
       db.answer.getAnswerByQuestion(req.params.id).then(result => {
@@ -23,7 +39,6 @@ module.exports = {
 
   getAllAnswers: (req, res, next) => {
     db.answer.getAll().then(result => {
-      console.log(result.rows)
       res.status(200).send(result.rows);
     }).catch(err => {
       res.status(500).send(err + ' error with getting all ans');
@@ -90,12 +105,11 @@ module.exports = {
   },
 
   updateAnswer: (req, res, next) => {
-    var qid = req.body.questionID;
     var answer = req.body.answer;
     var correct = req.body.correct;
     var aid = req.params.aid;
-    if (qid && answer && correct && aid) {
-        db.answer.update(qid, answer, correct, aid).then(result => {
+    if (answer && correct && aid) {
+        db.answer.update(answer, correct, aid).then(result => {
           db.answer.get(aid).then(result2 => {
             if (result2.rows.length > 0) {
               res.status(200).send(result2.rows[0]);
@@ -120,7 +134,7 @@ module.exports = {
       db.answer.delete(string).then(result => {
         console.log('answer ' + aid + ' deleted')
         res.status(200).end();
-      });
+      }).catch(err => {res.status(500).send(err)});
     } else {
       res.status(400).send('answerID not provided');
     }
@@ -134,7 +148,7 @@ module.exports = {
         if (result.rows.length > 0) {
           res.send(result.rows[0]);
         } else {
-          db.user.post(1, login.given_name, login.family_name, login.email ? login.email : '', '', login.auth_id).then(post => {
+          db.user.post(login.type === undefined ? 1 : login.type, login.given_name, login.family_name, login.email ? login.email : '', '', login.auth_id).then(post => {
             db.user.getByAuth(login.auth_id).then(result2 => {
               res.status(200).send(result2.rows[0]);
             }).catch(err => {
@@ -153,6 +167,23 @@ module.exports = {
     }
   },
 
+  getQuestion: (req, res, next) => {
+    var id = req.params.id;
+    if (id) {
+      db.question.get(id).then(result => {
+        if (result.rows.length > 0) {
+          res.status(200).send(result.rows[0]);
+        } else {
+          res.status(500).send('no questions found for the given id:' + id);
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    } else {
+      res.status(400).send('id not provided');
+    }
+  },
+
   getQuestions: (req, res, next) => {
     var socket = req.params.socket;
     if (socket) {
@@ -160,7 +191,7 @@ module.exports = {
         if (result.rows.length > 0) {
           res.status(200).send(result.rows);
         } else {
-          res.status(204).send('no questions found with given socket', socket);
+          res.status(204).send('no questions found with given socket:' + socket);
         }
       }).catch(err => {
         res.status(500).send(err)
@@ -272,6 +303,23 @@ module.exports = {
 
   },
 
+  getPresentation: (req, res, next) => {
+    var id = req.params.id;
+    if (id) {
+      db.presentation.get(id).then(result => {
+        if (result.rows.length > 0) {
+          res.status(200).send(result.rows[0]);
+        } else {
+          res.status(500).send('no presentation found with given id:' + id);
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    } else {
+      res.status(400).send('id not provided');
+    }
+  },
+
   getPresentationByS: (req, res, next) => {
     var socket = req.params.socket;
     if (socket) {
@@ -279,7 +327,7 @@ module.exports = {
         if (result.rows.length > 0) {
           res.status(200).send(result.rows[0]);
         } else {
-          res.status(204).send('no presentation found with given socket', socket);
+          res.status(204).send('no presentation found with given socket:' + socket);
         }
       }).catch(err => {
         res.status(500).send(err);
@@ -411,7 +459,7 @@ module.exports = {
         if (result.rows.length > 0) {
           res.status(200).send(result.rows[0]);
         } else {
-          res.status(204).send('-1');
+          res.status(200).send('-1');
         }
       }).catch(err => {
         res.status(500).send(err);
