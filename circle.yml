@@ -6,6 +6,7 @@ dependencies:
   override:
     - docker info
     - docker build -t nanongage/ngage-db .
+    - npm install
 
 test:
   override:
