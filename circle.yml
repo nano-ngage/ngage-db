@@ -2,6 +2,11 @@ machine:
   services:
     - docker
 
+database:
+  override:
+    - createdb ngagepg
+    - psql -u ubuntu ngagepg < db/schema.sql
+
 dependencies:
   override:
     - docker info
