@@ -8,7 +8,7 @@ echo "pulling latest version of the code"
 ssh $DEPLOY_USER@$DEPLOY_HOST 'docker pull nanongage/ngage-db:latest'
 
 echo "starting the new version"
-ssh $DEPLOY_USER@$DEPLOY_HOST 'docker run -d --restart=always -e DBUSER="'$DBUSER'" -e DBDB="'$DBDB'" -e DBPW="'$DBPW'" -e DBHOST="'$DBHOST'" --name ngage-db -p 5000:5000 nanongage/ngage-db:latest'
+ssh $DEPLOY_USER@$DEPLOY_HOST 'docker run -d --restart=always --link ngagepg:ngagepg -e DBUSER="'$DBUSER'" -e DBDB="'$DBDB'" -e DBPW="'$DBPW'" -e DBHOST="'$DBHOST'" --name ngage-db -p 5000:5000 nanongage/ngage-db:latest'
 
 echo "success!"
 
