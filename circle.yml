@@ -4,8 +4,9 @@ machine:
 
 database:
   override:
-    - createdb ngagepg
-    - psql -u ubuntu ngagepg < db/schema.sql
+    - createdb $DBDB
+    - createuser -s $DBUSER
+    - psql -U $DBUSER -d $DBDB < db/schema.sql
 
 dependencies:
   override:
