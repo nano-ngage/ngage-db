@@ -5,7 +5,6 @@ machine:
 database:
   override:
     - createdb $DBDB
-    - createuser -s $DBUSER
     - psql -U $DBUSER -d $DBDB < db/schema.sql
 
 dependencies:
