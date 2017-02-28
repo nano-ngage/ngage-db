@@ -26,7 +26,7 @@ module.exports = {
     get: (id) => db.query('SELECT * FROM "question" WHERE "questionID" = $1', [id]),
     getAll: () => db.query('SELECT * FROM "question"'),
     getQuestionsBySocket: (socket) =>
-      db.query('SELECT DISTINCT "questionID", "question" FROM "question" INNER JOIN "session" ON "session"."presentationID" = "question"."presentationID" AND "session"."socket" = $1', [socket]),
+      db.query('SELECT DISTINCT "questionID", "question", "type" FROM "question", INNER JOIN "session" ON "session"."presentationID" = "question"."presentationID" AND "session"."socket" = $1', [socket]),
     getQuestionsByPresentation: (presentationID) =>
       db.query('SELECT * FROM "question" WHERE "presentationID" = $1', [presentationID]),
     post: (presentationID, type, question) => db.query('INSERT INTO "question" ("presentationID", "type", "question") VALUES ($1, $2, $3) RETURNING "questionID"', [presentationID, type, question]),
