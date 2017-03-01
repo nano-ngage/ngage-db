@@ -328,6 +328,7 @@ describe('', function() {
         expect(parsedBody.sessionID).to.exist;
         expect(parsedBody.sessionID).to.be.a('number');
         expect(parsedBody.sessionID).to.equal(sessionID);
+        expect(parsedBody.title).to.equal('This is an updated test title')
         //responseID = body.responseID;
         done();
       });
