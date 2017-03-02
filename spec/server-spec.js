@@ -2,10 +2,10 @@ var expect = require('chai').expect;
 var request = require('request');
 var app = require('../server/routes.js');
 
-describe('', function() {
+describe('Server Tests', function() {
 
   var server;
-  var userID, presentationID, questionID, answerID, sessionID, responseID, audQuestionID;
+  var userID, presentationID, questionID, answerID, sessionID, responseID, audQuestionID, groupID;
   before(function() {
     server = app.listen(4568, function() {
       console.log('Shortly is listening on 4568');
@@ -489,7 +489,120 @@ describe('', function() {
       });
 
     });
-  })
+  });
+
+  describe('Participant:', function() {
+    var requestWithSession = request.defaults({jar: true});
+    it('Posts a participant to the database and returns the participant ID', function(done) {
+      var options = {
+        'method': 'POST',
+        'uri': 'http://127.0.0.1:4568/pa',
+        'json': {
+          'sessionID': sessionID,
+          'userID': userID
+        }
+      };
+      requestWithSession(options, function(error, res, body) {
+        expect(body).to.be.a('object');
+        expect(body.participantID).to.exist;
+        expect(body.participantID).to.be.a('number');
+        done();
+      });
+    });
+  });
+
+  describe('Group:', function() {
+    var requestWithSession = request.defaults({jar: true});
+    it('Posts a group to the database and returns the group ID', function(done) {
+      var options = {
+        'method': 'POST',
+        'uri': 'http://127.0.0.1:4568/g',
+        'json': {
+          'name': 'oldname',
+          'userID': userID
+        }
+      };
+      requestWithSession(options, function(error, res, body) {
+        expect(body).to.be.a('object');
+        expect(body.groupID).to.exist;
+        expect(body.groupID).to.be.a('number');
+        groupID = body.groupID;
+        done();
+      });
+    });
+
+    it('Updates a group on the database and returns the new group', function(done) {
+      var options = {
+        'method': 'PUT',
+        'uri': `http://127.0.0.1:4568/g/${groupID}`,
+        'json': {
+          'name': 'HR52'
+        }
+      };
+      requestWithSession(options, function(error, res, body) {
+        expect(body).to.be.a('object');
+        expect(body.name).to.exist;
+        expect(body.name).to.be.equal('HR52');
+        done();
+      });
+    });
+
+
+    it('Returns group based on user ID', function(done) {
+      var options = {
+        'method': 'GET',
+        'uri': `http://127.0.0.1:4568/gByU/${userID}`,
+      };
+      requestWithSession(options, function(error, res, body) {
+        var parsedBody = JSON.parse(body);
+        expect(parsedBody).to.be.a('array');
+        expect(parsedBody[0].groupID).to.exist;
+        expect(parsedBody[0].groupID).to.be.a('number');
+        expect(parsedBody.length).to.be.equal(1);
+        //responseID = body.responseID;
+        done();
+      });
+    });
+  });
+
+  describe('Group Member:', function() {
+    var requestWithSession = request.defaults({jar: true});
+    it('Posts a group member to the database and returns the group member ID', function(done) {
+      var options = {
+        'method': 'POST',
+        'uri': 'http://127.0.0.1:4568/gm',
+        'json': {
+          'groupID': groupID,
+          'userID': userID
+        }
+      };
+      requestWithSession(options, function(error, res, body) {
+        expect(body).to.be.a('object');
+        expect(body.groupMemberID).to.exist;
+        expect(body.groupMemberID).to.be.a('number');
+        groupMemberID = body.groupMemberID;
+        done();
+      });
+    });
+
+    it('Returns group members based on group ID', function(done) {
+      var options = {
+        'method': 'GET',
+        'uri': `http://127.0.0.1:4568/gmByG/${groupID}`,
+      };
+      requestWithSession(options, function(error, res, body) {
+        var parsedBody = JSON.parse(body);
+        expect(parsedBody).to.be.a('array');
+        expect(parsedBody[0].groupMemberID).to.exist;
+        expect(parsedBody[0].groupMemberID).to.be.a('number');
+        expect(parsedBody.length).to.be.equal(1);
+        //responseID = body.responseID;
+        done();
+      });
+    });
+  });
+
+
 
   // ---------------------------------------------
   // Have delete related tests at the end as the
@@ -498,6 +611,29 @@ describe('', function() {
   // ---------------------------------------------
   describe('Deletes:', function() {
     var requestWithSession = request.defaults({jar: true});
+
+    it('Deletes a group member and returns a valid status code', function(done) {
+      var options = {
+        'method': 'DELETE',
+        'uri': `http://127.0.0.1:4568/gm/${groupID}/${userID}`,
+      };
+      requestWithSession(options, function(error, res, body) {
+        expect(res.statusCode).to.equal(200);
+        done();
+      });
+    });
+
+    it('Deletes a group and returns a valid status code', function(done) {
+      var options = {
+        'method': 'DELETE',
+        'uri': `http://127.0.0.1:4568/g/${groupID}`,
+      };
+      requestWithSession(options, function(error, res, body) {
+        expect(res.statusCode).to.equal(200);
+        done();
+      });
+    });
+
     it('Deletes an answer and returns a valid status code', function(done) {
       var options = {
         'method': 'DELETE',
