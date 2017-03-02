@@ -58,4 +58,10 @@ app.get('/rByQS/:qid/:sessionID', helpers.getResponseByQandS);// good
 app.post('/r', helpers.postResponse); //good+
 app.post('/rMultiple', helpers.postMultiResponses); //good
 
+// AUDQUESTION
+app.get('/aq/:id', helpers.getAudQuestion);
+app.get('/aqByS/:sessionID', helpers.getAudQuestionBySession);
+app.post('/aqByS', helpers.postAudQuestion);
+app.put('/aq/:id', helpers.updateAudQuestion);
+
 module.exports = app;
