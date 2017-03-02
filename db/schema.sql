@@ -11,6 +11,9 @@ DROP TABLE IF EXISTS "answer" CASCADE;
 DROP TABLE IF EXISTS "question" CASCADE;
 DROP TABLE IF EXISTS "presentation" CASCADE;
 DROP TABLE IF EXISTS "user" CASCADE;
+DROP TABLE IF EXISTS "audQuestion" CASCADE;
+DROP TABLE IF EXISTS "participant" CASCADE;
+
 -- ---
 -- Table 'user'
 --
@@ -116,6 +119,36 @@ CREATE TABLE "response" (
   PRIMARY KEY ("responseID")
 );
 
+-- ---
+-- Table 'audquestion'
+--
+-- ---
+
+DROP TABLE IF EXISTS "audQuestion";
+
+CREATE TABLE "audQuestion" (
+  "audQuestionID" SERIAL NOT NULL,
+  "userID" INTEGER NOT NULL DEFAULT -1,
+  "content" VARCHAR(255) NULL DEFAULT NULL,
+  "upvotes" INTEGER NOT NULL DEFAULT 0,
+  "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY ("audQuestionID")
+);
+
+-- ---
+-- Table 'participant'
+--
+-- ---
+
+DROP TABLE IF EXISTS "participant";
+
+CREATE TABLE "participant" (
+  "participantID" SERIAL NOT NULL,
+  "userID" INTEGER NOT NULL DEFAULT -1,
+  "sessionID" INTEGER NOT NULL DEFAULT -1,
+  PRIMARY KEY ("participantID")
+);
 
 -- ---
 -- Foreign Keys
@@ -129,7 +162,9 @@ ALTER TABLE "response" ADD FOREIGN KEY ("sessionID") REFERENCES "session" ("sess
 ALTER TABLE "response" ADD FOREIGN KEY ("userID") REFERENCES "user" ("userID") ON DELETE CASCADE;
 ALTER TABLE "response" ADD FOREIGN KEY ("questionID") REFERENCES "question" ("questionID") ON DELETE CASCADE;
 ALTER TABLE "response" ADD FOREIGN KEY ("answerID") REFERENCES "answer" ("answerID") ON DELETE CASCADE;
-
+ALTER TABLE "audQuestion" ADD FOREIGN KEY ("userID") REFERENCES "user" ("userID") ON DELETE CASCADE;
+ALTER TABLE "participant" ADD FOREIGN KEY ("userID") REFERENCES "user" ("userID") ON DELETE CASCADE;
+ALTER TABLE "participant" ADD FOREIGN KEY ("sessionID") REFERENCES "session" ("sessionID") ON DELETE CASCADE;
 
 -- ---
 -- Table Properties
@@ -160,3 +195,7 @@ INSERT INTO "session" ("sessionID","presentationID","socket") VALUES
 (-1,-1,'null');
 INSERT INTO "response" ("responseID","sessionID","userID","questionID","answerID","content") VALUES
 (-1,-1,-1,-1,-1,null);
+INSERT INTO "audQuestion" ("userID", "content", "upvotes") VALUES
+(-1, 'undefined', 0)
+INSERT INTO "participant" ("userID", "sessionID") VALUES
+(-1, -1)
