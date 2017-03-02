@@ -62,9 +62,29 @@ module.exports = {
   },
   audQuestion: {
     truncate: () => db.query('DELETE FROM "audQuestion" where "audQuestionID" >= 0'),
-    get: (id) => db.query('SELECT * FROM "audQuestion" WHERE "audQuestionID" = $1', [id]),
-    getAudQuestionByS: (sessionID) => db.query('SELECT * FROM "audQuestion" WHERE "sessionID" = $1', [sessionID]),
+    get: id => db.query('SELECT * FROM "audQuestion" WHERE "audQuestionID" = $1', [id]),
+    getAudQuestionByS: sessionID => db.query('SELECT * FROM "audQuestion" WHERE "sessionID" = $1', [sessionID]),
     post: (sessionID, userID, content) => db.query('INSERT INTO "audQuestion" ("sessionID", "userID", "content") VALUES ($1, $2, $3) RETURNING "audQuestionID"', [sessionID, userID, content]),
-    put: (aqid) => db.query('UPDATE "audQuestion" SET "upvotes" = "upvotes" + 1 WHERE "audQuestionID" = $1 RETURNING "audQuestionID"', [aqid])
+    put: aqid => db.query('UPDATE "audQuestion" SET "upvotes" = "upvotes" + 1 WHERE "audQuestionID" = $1 RETURNING "audQuestionID"', [aqid])
+  },
+  participant: {
+    post: (userID, sessionID) => db.query('INSERT INTO "participant" ("userID", "sessionID") VALUES ($1, $2) RETURNING "participantID"', [userID, sessionID]),
+    get: id => db.query('SELECT * FROM "participant" WHERE "participantID" = $1', [id]),
+    getBySession: sessionID => db.query('SELECT * FROM "participant" WHERE "sessionID" = $1', [sessionID]),
+    getByUser: userID => db.query('SELECT * FROM "participant" WHERE "userID" = $1', [userID])
+  },
+  group: {
+    post: (name, userID) => db.query('INSERT INTO "group" ("name", "userID") VALUES ($1, $2) RETURNING "groupID"', [name, userID]),
+    get: id => db.query('SELECT * FROM "group" WHERE "groupID" = $1', [id]),
+    put: (name, groupID) => db.query('UPDATE "group" SET "name" = $1 WHERE "groupID" = $2', [name, groupID]),
+    getByUser: userID => db.query('SELECT * FROM "group" WHERE "userID" = $1', [userID]),
+    delete: (id) => db.query('DELETE FROM "group" WHERE "groupID" = $1', [id])
+  },
+  groupMember: {
+    post: (groupID, userID) => db.query('INSERT INTO "groupMember" ("groupID", "userID") VALUES ($1, $2) RETURNING "groupMemberID"', [groupID, userID]),
+    get: id => db.query('SELECT * FROM "groupMember" WHERE "groupMemberID" = $1', [id]),
+    getByGroup: groupID => db.query('SELECT * FROM "groupMember" WHERE "groupID" = $1', [groupID]),
+    delete: (groupID, userID) => db.query('DELETE FROM "groupMember" WHERE "groupID" = $1 AND "userID" = $2', [groupID, userID])
   }
+
 }
