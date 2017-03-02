@@ -109,7 +109,7 @@ module.exports = {
     var correct = req.body.correct;
     var aid = req.params.aid;
     if (answer && correct && aid) {
-        db.answer.update(answer, correct, aid).then(result => {
+        db.answer.put(answer, correct, aid).then(result => {
           db.answer.get(aid).then(result2 => {
             if (result2.rows.length > 0) {
               res.status(200).send(result2.rows[0]);
@@ -427,7 +427,7 @@ module.exports = {
     var pid = req.params.pid;
     var title = req.body.title;
     if (pid && title) {
-      db.presentation.update(title, pid).then(result => {
+      db.presentation.put(title, pid).then(result => {
         db.presentation.get(pid).then(result2 => {
           res.status(200).send(result2.rows[0]);
         }).catch(err => {
@@ -441,15 +441,17 @@ module.exports = {
 
   deletePresentation: (req, res, next) => {
     var pid = req.params.pid;
-    db.presentation.get(pid).then(result => {
-        db.presentation.delete(pid).then(result => {
+    db.presentation.get(pid)
+      .then(result => {
+        db.presentation.delete(pid)
+          .then(result => {
           res.status(200).send('Presentation ' + pid + ' deleted');
-        }).catch(err => {
-          res.status(500).send(err);
+          })
+          .catch(err => {
+            res.status(500).send(err);
         })
-    }).catch(err => {
-      res.status(500).send(err);
-    })
+      })
+      .catch(err => { res.status(500).send(err); })
   },
 
   getSession: (req, res, next) => {
@@ -603,6 +605,51 @@ module.exports = {
       res.status(400).send('SessionID, or questionID, or response body not provided');
     }
   },
+
+  getAudQuestion: (req, res, next) => {
+    var id = req.params.id;
+    if (id) {
+      db.audQuestion.get(id)
+        .then(result => { res.status(200).send(result.rows[0]); })
+        .catch(err => { res.status(500).send(err); });
+    } else {
+      res.status(400).send('id not provided');
+    }
+  },
+
+  getAudQuestionBySession: (req, res, next) => {
+    var sessionID = req.params.sessionID;
+    if (sessionID) {
+      db.audQuestion.getAudQuestionByS(sessionID)
+        .then(result => { res.status(200).send(result.rows); })
+        .catch(err => { res.status(500).send(err); });
+    } else {
+      res.status(400).send('session ID not provided');
+    }
+  },
+
+  postAudQuestion: (req, res, next) => {
+    var sessionID = req.body.sessionID;
+    var userID = req.body.userID;
+    var content = req.body.content;
+    if (sessionID && userID && content) {
+      db.audQuestion.post(sessionID, userID, content)
+        .then(result => db.audQuestion.get(result.rows[0].audQuestionID))
+        .then(result2 => { res.status(200).send(result2.rows[0]); })
+        .catch(err => { res.status(500).send(err); });
+    } else {
+      res.status(400).send('response body not provided');
+    }
+  },
+
+  updateAudQuestion: (req, res, next) => {
+    var id = req.params.id;
+    if (id) {
+      db.audQuestion.put(id)
+        .then(result2 => { res.status(200).send(id); })
+        .catch(err => { res.status(500).send(err); })
+    } else {
+      res.status(400).send('audQuestionID not provided');
+    }
+  },
 }
-
-
