@@ -152,6 +152,34 @@ CREATE TABLE "participant" (
 );
 
 -- ---
+-- Table 'group'
+--
+-- ---
+
+DROP TABLE IF EXISTS "group";
+
+CREATE TABLE "group" (
+  "groupID" SERIAL NOT NULL,
+  "name" VARCHAR(255) NULL DEFAULT NULL,
+  "userID" INTEGER NOT NULL DEFAULT -1,
+  PRIMARY KEY ("groupID")
+);
+
+-- ---
+-- Table 'groupMember'
+--
+-- ---
+
+DROP TABLE IF EXISTS "groupMember";
+
+CREATE TABLE "groupMember" (
+  "groupMemberID" SERIAL NOT NULL,
+  "groupID" INTEGER NOT NULL DEFAULT -1,
+  "userID" INTEGER NOT NULL DEFAULT -1,
+  PRIMARY KEY ("groupID")
+);
+
+-- ---
 -- Foreign Keys
 -- ---
 
@@ -167,7 +195,9 @@ ALTER TABLE "audQuestion" ADD FOREIGN KEY ("userID") REFERENCES "user" ("userID"
 ALTER TABLE "audQuestion" ADD FOREIGN KEY ("sessionID") REFERENCES "session" ("sessionID") ON DELETE CASCADE;
 ALTER TABLE "participant" ADD FOREIGN KEY ("userID") REFERENCES "user" ("userID") ON DELETE CASCADE;
 ALTER TABLE "participant" ADD FOREIGN KEY ("sessionID") REFERENCES "session" ("sessionID") ON DELETE CASCADE;
-
+ALTER TABLE "group" ADD FOREIGN KEY ("userID") REFERENCES "user" ("userID") ON DELETE CASCADE;
+ALTER TABLE "groupMember" ADD FOREIGN KEY ("groupID") REFERENCES "group" ("groupID") ON DELETE CASCADE;
+ALTER TABLE "groupMember" ADD FOREIGN KEY ("userID") REFERENCES "user" ("userID") ON DELETE CASCADE;
 -- ---
 -- Table Properties
 -- ---
@@ -197,7 +227,11 @@ INSERT INTO "session" ("sessionID","presentationID","socket") VALUES
 (-1,-1,'null');
 INSERT INTO "response" ("responseID","sessionID","userID","questionID","answerID","content") VALUES
 (-1,-1,-1,-1,-1,null);
-INSERT INTO "audQuestion" ("userID", "content", "upvotes") VALUES
-(-1, 'undefined', 0);
-INSERT INTO "participant" ("userID", "sessionID") VALUES
-(-1, -1);
+INSERT INTO "audQuestion" ("audQuestionID", "userID", "content", "upvotes") VALUES
+(-1, -1, 'undefined', 0);
+INSERT INTO "participant" ("participantID", "userID", "sessionID") VALUES
+(-1, -1, -1);
+INSERT INTO "group" ("groupID", "name", "userID") VALUES
+(-1, 'undefined', -1);
+INSERT INTO "groupMember" ("groupMemberID", "groupID", "userID") VALUES
+(-1, -1, -1);
