@@ -18,7 +18,7 @@ module.exports = {
     getPresBySocket: (socket) => db.query('SELECT "presentationID" FROM "session" WHERE "socket" = $1', [socket]),
     getPresByUser: (userID) => db.query('SELECT * FROM "presentation" WHERE "userID" = $1', [userID]),
     post: (userID, title) => db.query('INSERT INTO "presentation" ("userID", "title") VALUES ($1, $2) RETURNING "presentationID"', [userID, title]),
-    update: (title, pid) => db.query('UPDATE "presentation" SET "title" = $1 WHERE "presentationID" = $2', [title, pid]),
+    put: (title, pid) => db.query('UPDATE "presentation" SET "title" = $1 WHERE "presentationID" = $2', [title, pid]),
     delete: (pid) => db.query('DELETE FROM "presentation" WHERE "presentationID" = $1', [pid]),
   },
   question: {
@@ -41,7 +41,7 @@ module.exports = {
     getCorrect: (id) => db.query('SELECT * FROM "answer" WHERE "questionID" = $1 AND "correct" = $2', [id, 1]),
     post: (questionID, answer, correct) => db.query('INSERT INTO "answer" ("questionID", "answer", "correct") VALUES ($1, $2, $3) RETURNING "answerID"', [questionID, answer, correct]),
     postMultiple: (values) => db.query('INSERT INTO "answer" ("questionID", "answer", "correct") VALUES ' + values + ' RETURNING "answerID"'),
-    update: (answer, correct, id) => db.query('UPDATE "answer" SET "answer" = $1, "correct" = $2 WHERE "answerID" = $3', [answer, correct, id]),
+    put: (answer, correct, id) => db.query('UPDATE "answer" SET "answer" = $1, "correct" = $2 WHERE "answerID" = $3', [answer, correct, id]),
     delete: (id) => db.query('DELETE FROM "answer" WHERE "answerID" IN ' + id),
   },
   session: {
@@ -59,5 +59,12 @@ module.exports = {
     getResponseByQS: (qid, sessionID) => db.query('SELECT * FROM "response" WHERE "questionID" = $1 AND "sessionID" = $2', [qid, sessionID]),
     post: (sessionID, userID, questionID, answerID, content) => db.query('INSERT INTO "response" ("sessionID", "userID", "questionID", "answerID", "content") VALUES ($1, $2, $3, $4, $5) RETURNING "responseID"', [sessionID, userID, questionID, answerID, content]),
     postMultiple: (values) => db.query('INSERT INTO "response" ("sessionID", "userID", "questionID", "answerID", "content") VALUES' + values + ' RETURNING "responseID"'),
+  },
+  audQuestion: {
+    truncate: () => db.query('DELETE FROM "audQuestion" where "audQuestionID" >= 0'),
+    get: (id) => db.query('SELECT * FROM "audQuestion" WHERE "audQuestionID" = $1', [id]),
+    getAudQuestionByS: (sessionID) => db.query('SELECT * FROM "audQuestion" WHERE "sessionID" = $1', [sessionID]),
+    post: (sessionID, userID, content) => db.query('INSERT INTO "audQuestion" ("sessionID", "userID", "content") VALUES ($1, $2, $3) RETURNING "audQuestionID"', [sessionID, userID, content]),
+    put: (aqid) => db.query('UPDATE "audQuestion" SET "upvotes" = "upvotes" + 1 WHERE "audQuestionID" = $1 RETURNING "audQuestionID"', [aqid])
   }
 }
