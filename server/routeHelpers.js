@@ -652,4 +652,96 @@ module.exports = {
       res.status(400).send('audQuestionID not provided');
     }
   },
+
+  postParticipant: (req, res, next) => {
+    var sessionID = req.body.sessionID;
+    var userID = req.body.userID;
+    if (sessionID && userID) {
+      db.participant.post(userID, sessionID)
+      .then(result => db.participant.get(result.rows[0].participantID))
+      .then(result2 => {res.status(200).send(result2.rows[0])})
+      .catch(err => { res.status(500).send(err); });
+    } else {
+      res.status(400).send('sessionID or userID not provided');
+    }
+  },
+
+  postGroup: (req, res, next) => {
+    var name = req.body.name;
+    var userID = req.body.userID;
+    if (name && userID) {
+      db.group.post(name, userID)
+      .then(result => db.group.get(result.rows[0].groupID))
+      .then(result2 => {res.status(200).send(result2.rows[0])})
+      .catch(err => { res.status(500).send(err); });
+    } else {
+      res.status(400).send('name or userID not provided');
+    }
+  },
+
+  updateGroup: (req, res, next) => {
+    var groupID = req.params.groupID;
+    var name = req.body.name;
+    if (groupID && name) {
+      db.group.put(name, groupID)
+      .then(result => db.group.get(groupID))
+      .then(result2 => {res.status(200).send(result2.rows[0])})
+      .catch(err => { res.status(500).send(err); });
+    } else {
+      res.status(400).send('name not provided');
+    }
+  },
+  getGroupByUser: (req, res, next) => {
+    var userID = req.params.userID;
+    if (userID) {
+      db.group.getByUser(userID)
+      .then(result => {res.status(200).send(result.rows);})
+      .catch(err => { res.status(500).send(err); });
+    } else {
+      res.status(400).send('userID not provided');
+    }
+  },
+  deleteGroup: (req, res, next) => {
+    var groupID = req.params.groupID;
+    if (groupID) {
+      db.group.delete(groupID)
+      .then(result => {res.status(200).send('Group ' + groupID + ' deleted');})
+      .catch(err => { res.status(500).send(err); });
+    } else {
+      res.status(400).send('groupID not provided');
+    }
+  },
+  postGroupMember: (req, res, next) => {
+    var groupID = req.body.groupID;
+    var userID = req.body.userID;
+    if (groupID && userID) {
+      db.groupMember.post(groupID, userID)
+      .then(result => db.groupMember.get(result.rows[0].groupMemberID))
+      .then(result2 => {res.status(200).send(result2.rows[0])})
+      .catch(err => { res.status(500).send(err); });
+    } else {
+      res.status(400).send('groupID or userID not provided');
+    }
+  },
+  getGroupMemberByGroup: (req, res, next) => {
+    var groupID = req.params.groupID;
+    if (groupID) {
+      db.groupMember.getByGroup(groupID)
+      .then(result => {res.status(200).send(result.rows);})
+      .catch(err => { res.status(500).send(err); });
+    } else {
+      res.status(400).send('groupID not provided');
+    }
+  },
+  deleteGroupMember: (req, res, next) => {
+    var groupID = req.params.groupID;
+    var userID = req.params.userID;
+    if (groupID && userID) {
+      db.groupMember.delete(groupID, userID)
+      .then(result => {res.status(200).send('Group Member deleted');})
+      .catch(err => { res.status(500).send(err); });
+    } else {
+      res.status(400).send('groupID or userID not provided');
+    }
+  },
 }

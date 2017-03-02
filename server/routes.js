@@ -64,4 +64,21 @@ app.get('/aqByS/:sessionID', helpers.getAudQuestionBySession);
 app.post('/aqByS', helpers.postAudQuestion);
 app.put('/aq/:id', helpers.updateAudQuestion);
 
+
+//PARTICIPANT
+app.post('/pa', helpers.postParticipant);
+
+//GROUP
+app.post('/g', helpers.postGroup);
+app.put('/g/:groupID', helpers.updateGroup);
+app.get('/gByU/:userID', helpers.getGroupByUser);
+app.delete('/g/:groupID', helpers.deleteGroup);
+
+//GROUP MEMBER
+app.post('/gm', helpers.postGroupMember);
+app.get('/gmByG/:groupID', helpers.getGroupMemberByGroup);
+app.delete('/gm/:groupID/:userID', helpers.deleteGroupMember);
+
+
+
 module.exports = app;
