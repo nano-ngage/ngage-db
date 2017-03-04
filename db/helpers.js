@@ -8,6 +8,7 @@ module.exports = {
     truncate: () => db.query('DELETE FROM "user" where "userID" >= 0'),
     get: (id) => db.query('SELECT * FROM "user" where "userID" = $1', [id]),
     getAll: () => db.query('SELECT * FROM "user"'),
+    search: (search) => db.query('SELECT * FROM "user" where lower("firstName") LIKE $1 OR lower("lastName") LIKE $1 OR lower(concat("firstName", \' \', "lastName")) LIKE $1', ['%' + search.toLowerCase() + '%']),
     getByAuth: (id) => db.query('SELECT * FROM "user" where "authID" = $1', [id]),
     post: (type, firstName, lastName, email, password, authID) => db.query('INSERT INTO "user" ("type","firstName","lastName","email","password","authID") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "userID"', [type, firstName, lastName, email, password, authID])
   },
