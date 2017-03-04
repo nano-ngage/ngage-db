@@ -8,7 +8,22 @@ module.exports = {
       res.status(500).send(err);
     })
   },
-
+  searchUsers: (req, res, next) => {
+    if (req.params.search) {
+      console.log(req.params.search);
+      db.user.search(req.params.search).then(result => {
+        if (result.rows.length > 0) {
+          res.status(200).send(result.rows);
+        } else {
+          res.status(200).send('[]');
+        }
+      }).catch(err => {
+        res.status(500).send(err);
+      })
+    } else  {
+      res.status(400).send('search parameter not provided');
+    }
+  },
   getAnswer: (req, res, next) => {
     if (req.params.id) {
       db.answer.get(req.params.id).then(result => {
