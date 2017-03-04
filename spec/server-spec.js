@@ -8,7 +8,7 @@ describe('Server Tests', function() {
   var userID, presentationID, questionID, answerID, sessionID, responseID, audQuestionID, groupID;
   before(function() {
     server = app.listen(4568, function() {
-      console.log('Shortly is listening on 4568');
+      console.log('nGage DB is listening on 4568');
     });
   });
 
@@ -34,6 +34,22 @@ describe('Server Tests', function() {
         expect(body.userID).to.exist;
         expect(body.userID).to.be.a('number');
         userID = body.userID;
+        done();
+      });
+    });
+
+    it('Searches for and finds user', function(done) {
+      var options = {
+        'method': 'GET',
+        'uri': `http://127.0.0.1:4568/searchU/User`,
+      };
+      requestWithSession(options, function(error, res, body) {
+        var parsedBody = JSON.parse(body);
+        expect(parsedBody).to.be.a('array');
+        expect(parsedBody[0].firstName).to.exist;
+        expect(parsedBody[0].firstName).to.equal('User');
+        expect(parsedBody.length).to.be.above(0);
+        //responseID = body.responseID;
         done();
       });
     });
