@@ -6,7 +6,7 @@ var config = {
   password: process.env.DBPW ||'sTgEHTHK82B7Rc9WVZ92y8PEcAKkm8zh', //env var: PGPASSWORD
   host: process.env.DBHOST || 'babar.elephantsql.com', // Server hosting the postgres database
   port: 5432, //env var: PGPORT
-  max: process.env.DBHOST ? 100 : 10, // max number of clients in the pool
+  max: process.env.DBHOST ? 1000 : 10, // max number of clients in the pool
   idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
 };
 
