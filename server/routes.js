@@ -14,6 +14,7 @@ app.get('/', (req, res) => {res.send('Hello world')});
 
 // USERS
 app.get('/allU', helpers.getAllUsers);
+app.get('/searchU/:search', helpers.searchUsers);
 
 //LOGIN
 app.post('/login', helpers.login); // good
