@@ -84,7 +84,7 @@ module.exports = {
   groupMember: {
     post: (groupID, userID) => db.query('INSERT INTO "groupMember" ("groupID", "userID") VALUES ($1, $2) RETURNING "groupMemberID"', [groupID, userID]),
     get: id => db.query('SELECT * FROM "groupMember" WHERE "groupMemberID" = $1', [id]),
-    getByGroup: groupID => db.query('SELECT * FROM "groupMember" WHERE "groupID" = $1', [groupID]),
+    getByGroup: groupID => db.query('SELECT gm.*, u."firstName", u."lastName", u."email" FROM "groupMember" gm INNER JOIN "user" u ON u."userID" = gm."userID" WHERE "groupID" = $1', [groupID]),
     delete: (groupID, userID) => db.query('DELETE FROM "groupMember" WHERE "groupID" = $1 AND "userID" = $2', [groupID, userID])
   }
 
