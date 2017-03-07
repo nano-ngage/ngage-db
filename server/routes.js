@@ -49,6 +49,7 @@ app.delete('/p/:pid', helpers.deletePresentation); // good
 
 // SESSION
 app.get('/sByS/:socket', helpers.getSession); // good
+app.get('/sByULatest/:userID/', helpers.getLatestSessionByUser); 
 app.get('/sAll', helpers.getAllSessions); // good
 app.post('/sByPS', helpers.postSession); // good+
 

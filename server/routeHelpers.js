@@ -486,6 +486,20 @@ module.exports = {
     }
   },
 
+  getLatestSessionByUser: (req, res, next) => {
+    var userID = req.params.userID;
+    if (userID) {
+      db.session.getLastID(userID).then(result => {
+         if (result.rows.length > 0) {
+          res.status(200).send(result.rows[0]);
+        } else {
+          res.status(500).send('no session found with given id:' + id);
+        }       
+      })
+    } else {
+      res.status(400).send('userID not provided');
+    }
+  },
   getAllSessions: (req, res, next) => {
     db.session.getAll().then(result => {
       res.status(200).send(result.rows);
@@ -493,6 +507,8 @@ module.exports = {
       res.status(500).send(err);
     })
   },
+
+
 
   postSession: (req, res, next) => {
     var pid = req.body.presentationID;
@@ -681,14 +697,35 @@ module.exports = {
     }
   },
 
-  postGroup: (req, res, next) => {
-    var name = req.body.name;
-    var userID = req.body.userID;
-    if (name && userID) {
+  postGroupHelper: (res, userID, name) => {
       db.group.post(name, userID)
       .then(result => db.group.get(result.rows[0].groupID))
       .then(result2 => {res.status(200).send(result2.rows[0])})
       .catch(err => { res.status(500).send(err); });
+  },
+
+  postGroup: (req, res, next) => {
+    var name = req.body.name;
+    var userID = req.body.userID;
+    if (name && userID) {
+      db.group.getLastID(userID).then(result => {
+        if (result.rows.length > 0) {
+          var group = result.rows[0];
+          var gid = group.groupID;
+          db.groupMember.getByGroup(gid).then(gs => {
+            if (gs.rows.length > 0) {
+              // post new group
+              module.exports.postGroupHelper(res, userID, name);
+            } else {
+              // do not post new, just send back ID of last group
+              res.status(200).send(group);
+            }            
+          })
+        } else {
+          module.exports.postGroupHelper(res, userID, name);
+        }
+      });
+
     } else {
       res.status(400).send('name or userID not provided');
     }
