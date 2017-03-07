@@ -49,6 +49,7 @@ module.exports = {
     truncate: () => db.query('DELETE FROM "session" where "sessionID" >= 0'),
     get: (id) => db.query('SELECT * FROM "session" WHERE "sessionID" = $1', [id]),
     getAll: () => db.query('SELECT * FROM "session"'),
+    getLastID: (userID) => db.query('SELECT s."sessionID" FROM "session" s INNER JOIN "presentation" p ON s."presentationID" = p."presentationID" AND p."userID" = $1 ORDER BY s."updatedAt" DESC LIMIT 1', [userID]),
     getSessionBySocket: (socket) => db.query('SELECT "session"."sessionID", "presentation"."userID", "presentation"."title" FROM "session" INNER JOIN "presentation" ON "presentation"."presentationID" = "session"."presentationID" WHERE "socket" = $1', [socket]),
     post: (presentationID, socket) => db.query('INSERT INTO "session" ("presentationID", "socket") VALUES ($1, $2) RETURNING "sessionID"', [presentationID, socket])
   },
@@ -77,9 +78,10 @@ module.exports = {
   group: {
     post: (name, userID) => db.query('INSERT INTO "group" ("name", "userID") VALUES ($1, $2) RETURNING "groupID"', [name, userID]),
     get: id => db.query('SELECT * FROM "group" WHERE "groupID" = $1', [id]),
+    getLastID: userID => db.query('SELECT "groupID" FROM "group" WHERE "userID" = $1 ORDER BY "updatedAt" DESC LIMIT 1', [userID]),
     put: (name, groupID) => db.query('UPDATE "group" SET "name" = $1 WHERE "groupID" = $2', [name, groupID]),
     getByUser: userID => db.query('SELECT * FROM "group" WHERE "userID" = $1', [userID]),
-    delete: (id) => db.query('DELETE FROM "group" WHERE "groupID" = $1', [id])
+    delete: id => db.query('DELETE FROM "group" WHERE "groupID" = $1', [id])
   },
   groupMember: {
     post: (groupID, userID) => db.query('INSERT INTO "groupMember" ("groupID", "userID") VALUES ($1, $2) RETURNING "groupMemberID"', [groupID, userID]),
