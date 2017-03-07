@@ -333,6 +333,22 @@ describe('Server Tests', function() {
       });
     });
 
+    it('Returns latest session by user', function(done) {
+      var options = {
+        'method': 'GET',
+        'uri': `http://127.0.0.1:4568/sByULatest/${userID}`,
+      };
+      requestWithSession(options, function(error, res, body) {
+        var parsedBody = JSON.parse(body);
+        expect(parsedBody).to.be.a('object');
+        expect(parsedBody.sessionID).to.exist;
+        expect(parsedBody.sessionID).to.be.a('number');
+        expect(parsedBody.sessionID).to.equal(sessionID);
+        //responseID = body.responseID;
+        done();
+      });
+    });
+
     it('Returns session based on socket', function(done) {
       var options = {
         'method': 'GET',
