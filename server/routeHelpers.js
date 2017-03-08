@@ -536,7 +536,28 @@ module.exports = {
       res.status(400).send('pid or socket not provided');
     }
   },
-
+  updateSAsk: (req, res, next) => {
+    var id = req.params.id;
+    var flag = req.body.flag;
+    if (id && flag) {
+      db.session.putAsk(id, flag)
+        .then(result => { res.status(200).send(result.rows[0]); })
+        .catch(err => { res.status(500).send(err); })
+    } else {
+      res.status(400).send('id or flag not provided');
+    }
+  },
+  updateSAudQ: (req, res, next) => {
+    var id = req.params.id;
+    var flag = req.body.flag;
+    if (id && flag) {
+      db.session.putAudQ(id, flag)
+        .then(result => { res.status(200).send(result.rows[0]); })
+        .catch(err => { res.status(500).send(err); })
+    } else {
+      res.status(400).send('id or flag not provided');
+    }
+  },
   getResponseByQuestion: (req, res, next) => {
     var qid = req.params.qid;
     if (qid) {

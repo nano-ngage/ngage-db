@@ -52,6 +52,8 @@ app.get('/sByS/:socket', helpers.getSession); // good
 app.get('/sByULatest/:userID/', helpers.getLatestSessionByUser); 
 app.get('/sAll', helpers.getAllSessions); // good
 app.post('/sByPS', helpers.postSession); // good+
+app.put('/sAsk/:id', helpers.updateSAsk);
+app.put('/sAudQ/:id', helpers.updateSAudQ); // good+
 
 // RESPONSE
 app.get('/rByQ/:qid', helpers.getResponseByQuestion); //good
