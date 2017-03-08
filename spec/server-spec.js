@@ -317,6 +317,38 @@ describe('Server Tests', function() {
       });
     });
 
+    it('Updates a session on the database and returns the new flag', function(done) {
+      var options = {
+        'method': 'PUT',
+        'uri': `http://127.0.0.1:4568/sAsk/${sessionID}`,
+        'json': {
+          'flag': 1
+        }
+      };
+      requestWithSession(options, function(error, res, body) {
+        expect(body).to.be.a('object');
+        expect(body.askEnabled).to.exist;
+        expect(body.askEnabled).to.be.equal(1);
+        done();
+      });
+    });
+
+    it('Updates a session on the database and returns the new flag', function(done) {
+      var options = {
+        'method': 'PUT',
+        'uri': `http://127.0.0.1:4568/sAudQ/${sessionID}`,
+        'json': {
+          'flag': 1
+        }
+      };
+      requestWithSession(options, function(error, res, body) {
+        expect(body).to.be.a('object');
+        expect(body.audQEnabled).to.exist;
+        expect(body.audQEnabled).to.be.equal(1);
+        done();
+      });
+    });
+
     it('Returns all sessions', function(done) {
       var options = {
         'method': 'GET',
