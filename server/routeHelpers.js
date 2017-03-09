@@ -494,7 +494,7 @@ module.exports = {
           res.status(200).send(result.rows[0]);
         } else {
           res.status(500).send('no session found with given id:' + id);
-        }       
+        }
       })
     } else {
       res.status(400).send('userID not provided');
@@ -539,7 +539,7 @@ module.exports = {
   updateSAsk: (req, res, next) => {
     var id = req.params.id;
     var flag = req.body.flag;
-    if (id && flag) {
+    if (id && flag !== undefined) {
       db.session.putAsk(id, flag)
         .then(result => { res.status(200).send(result.rows[0]); })
         .catch(err => { res.status(500).send(err); })
@@ -550,7 +550,7 @@ module.exports = {
   updateSAudQ: (req, res, next) => {
     var id = req.params.id;
     var flag = req.body.flag;
-    if (id && flag) {
+    if (id && flag !== undefined) {
       db.session.putAudQ(id, flag)
         .then(result => { res.status(200).send(result.rows[0]); })
         .catch(err => { res.status(500).send(err); })
@@ -740,7 +740,7 @@ module.exports = {
             } else {
               // do not post new, just send back ID of last group
               res.status(200).send(group);
-            }            
+            }
           })
         } else {
           module.exports.postGroupHelper(res, userID, name);
